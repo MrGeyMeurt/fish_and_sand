@@ -1,16 +1,15 @@
-# ??
+# *Project Poisson*
 
 ## Description
 *Project Poisson* is a minimalist underwater adventure game inspired by Untitled Goose Game. In this student project, the player controls a small fish. This project is developed in Unity with C#, utilizing Blender for 3D assets, following a low-poly style with flat colors for an immersive, simplified aesthetic.
 
 ## Project status
-- **Brainstorming**: Defining the general concept (genre, theme, art style).
-- **Game Mechanics**: Discussing simple gameplay mechanics (platformer, puzzle, racing, etc.).
-- **Target Audience**: Considering the target audience and the project's complexity.
+- **Game Mechanics**: Initial gameplay mechanics are under development, including movement, interactions, camera setup, and basic physics.
+- **Temporary Asset Creation**: Basic models are created in Blender (characters, environments) to test integration.
 
 ## Features
 - **To-do List**: The player completes a single task at a time, such as moving an object from point A to point B.
-- **Camouflage**: The player can hide near seaweed to avoid detection by the shark.
+- **Camouflage**: The shark cannot detect the player if the player is near seaweed.
 - **Shark AI**:
   - The shark moves randomly but will chase the player if they come close.
   - After completing a task, the shark follows the player for 3 seconds before returning to random movement.
