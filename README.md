@@ -34,5 +34,5 @@ Once all tasks are completed, the fish reaches the coral reef, escapes the lagoo
 4. Press "Play" in the Unity editor to run the current version of the game.
 
 ## Contributors
-- **Manu.T (Developer)**: Responsible for physics, gameplay and functionalities.
-- **Louis.B (3D Artist)**: Focused on 3D asset creation and animations.
+- **Manu.T**: Developer | Responsible for physics, gameplay and functionalities.
+- **Louis.B**: 3D Artist | Focused on 3D asset creation and animations.
