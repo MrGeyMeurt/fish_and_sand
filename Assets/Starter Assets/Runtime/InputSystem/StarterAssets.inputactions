@@ -92,7 +92,7 @@
                 {
                     "name": "Forward",
                     "id": "bb94b405-58d3-4998-8535-d705c1218a98",
-                    "path": "<Keyboard>/upArrow",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
@@ -103,7 +103,7 @@
                 {
                     "name": "Backward",
                     "id": "929d9071-7dd0-4368-9743-6793bb98087e",
-                    "path": "<Keyboard>/downArrow",
+                    "path": "<Keyboard>/ctrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",

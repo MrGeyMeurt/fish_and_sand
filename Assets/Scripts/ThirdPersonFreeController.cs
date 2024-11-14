@@ -17,56 +17,73 @@ namespace StarterAssets
     {
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
-        public float MoveSpeed = 2.0f;
+        [SerializeField]
+        private float MoveSpeed = 2.0f;
 
         [Tooltip("Sprint speed of the character in m/s")]
-        public float SprintSpeed = 5.335f;
+        [SerializeField]
+        private float SprintSpeed = 5.335f;
 
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
-        public float RotationSmoothTime = 0.12f;
+        [SerializeField]
+        private float RotationSmoothTime = 0.12f;
 
         [Tooltip("Acceleration and deceleration")]
-        public float SpeedChangeRate = 10.0f;
+        [SerializeField]
+        private float SpeedChangeRate = 10.0f;
 
-        public AudioClip LandingAudioClip;
-        public AudioClip[] FootstepAudioClips;
-        [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
+        [SerializeField]
+        private AudioClip LandingAudioClip;
+        [SerializeField]
+        private AudioClip[] FootstepAudioClips;
+        [Range(0, 1)][SerializeField] private float FootstepAudioVolume = 0.5f;
 
-        [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-        public float Gravity = -15.0f;
+        //[Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
+        //[SerializeField]
+        //private float Gravity = -15.0f;
 
-        [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
-        public float FallTimeout = 0.15f;
+        //[Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
+        //[SerializeField]
+        //private float FallTimeout = 0.15f;
 
         [Header("Player Grounded")]
         [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
-        public bool Grounded = true;
+        [SerializeField]
+        private bool Grounded = true;
 
         [Tooltip("Useful for rough ground")]
-        public float GroundedOffset = -0.14f;
+        [SerializeField]
+        private float GroundedOffset = -0.14f;
 
         [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
-        public float GroundedRadius = 0.28f;
+        [SerializeField]
+        private float GroundedRadius = 0.28f;
 
         [Tooltip("What layers the character uses as ground")]
-        public LayerMask GroundLayers;
+        [SerializeField]
+        private LayerMask GroundLayers;
 
         [Header("Cinemachine")]
         [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-        public GameObject CinemachineCameraTarget;
+        [SerializeField]
+        private GameObject CinemachineCameraTarget;
 
         [Tooltip("How far in degrees can you move the camera up")]
-        public float TopClamp = 70.0f;
+        [SerializeField]
+        private float TopClamp = 70.0f;
 
         [Tooltip("How far in degrees can you move the camera down")]
-        public float BottomClamp = -30.0f;
+        [SerializeField]
+        private float BottomClamp = -30.0f;
 
         [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
-        public float CameraAngleOverride = 0.0f;
+        [SerializeField]
+        private float CameraAngleOverride = 0.0f;
 
         [Tooltip("For locking the camera position on all axis")]
-        public bool LockCameraPosition = false;
+        [SerializeField]
+        private bool LockCameraPosition = false;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -208,7 +225,7 @@ namespace StarterAssets
             // if there is no input, set the target speed to 0
             if (_input.move == Vector3.zero) targetSpeed = 0.0f;
 
-            // a reference to the players current horizontal velocity
+            // a reference to the players current horizontal velocity (X, Y)
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
             double SpeedH = System.Math.Ceiling(currentHorizontalSpeed);
             Debug.Log("vitesse horizontale :" + SpeedH);
@@ -237,7 +254,7 @@ namespace StarterAssets
             if (_animationBlend < 0.01f) _animationBlend = 0f;
 
             // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, _input.move.z, _input.move.y).normalized;
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
             Debug.Log("Direction :" + " Z:" + _input.move.z + " Y:" + _input.move.y + " X:" + _input.move.x);
 
             // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
@@ -258,7 +275,7 @@ namespace StarterAssets
 
             // move the player
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+                             new Vector3(0.0f, _input.move.z, 0.0f) * Time.deltaTime);
 
             // update animator if using character
             if (_hasAnimator)
