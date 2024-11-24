@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "projet_poisson.sln"
+    "dotnet.defaultSolution": "projet_poisson.sln",
+    "dotnet.preferCSharpExtension": true
 }
