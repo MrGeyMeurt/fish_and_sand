@@ -1,7 +1,7 @@
-# *Project Poisson*
+# *Fish & Sand*
 
 ## Description
-*Project Poisson* is a minimalist underwater adventure game inspired by Untitled Goose Game. In this student project, the player controls a small fish. This project is developed in Unity with C#, utilizing Blender for 3D assets, following a low-poly style with flat colors for an immersive, simplified aesthetic.
+*Fish & Sand* is a minimalist underwater adventure game inspired by Untitled Goose Game. In this student project, the player controls a small fish. This project is developed in Unity with C#, utilizing Blender for 3D assets, following a low-poly style with flat colors for an immersive, simplified aesthetic.
 
 ## Project status
 - **Game Mechanics**: Initial gameplay mechanics are under development, including movement, interactions, camera setup, and basic physics.
@@ -34,5 +34,5 @@ Once all tasks are completed, the fish reaches the coral reef, escapes the lagoo
 4. Press "Play" in the Unity editor to run the current version of the game.
 
 ## Contributors
-- **Manu.T**: Developer | Responsible for physics, gameplay and functionalities.
-- **Louis.B**: 3D Artist | Focused on 3D asset creation and animations.
+- **[Manu.T](https://github.com/MrGeyMeurt)** - Developer | Responsible for physics, gameplay and functionalities.
+- **[Louis.B](https://github.com/louisbx)** - 3D Artist | Focused on 3D asset creation and animations.
