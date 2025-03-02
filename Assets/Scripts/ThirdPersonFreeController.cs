@@ -22,28 +22,20 @@ namespace StarterAssets
 
         private CharacterController _controller;
         private StarterAssetsInputs _input;
-        private GameObject _mainCamera;
-
-        private void Awake()
-        {
-            // get a reference to our main camera
-            if (_mainCamera == null)
-            {
-                _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-            }
-        }
 
         private void Start()
         {
-            
-            _controller = GetComponent<CharacterController>();
-            _input = GetComponent<StarterAssetsInputs>();
+            // get the character controller ( capsule collider )
+            _controller = GetComponent<CharacterController>(); //physic of the character
+            _input = GetComponent<StarterAssetsInputs>(); //input
+            Debug.Log($"_input: {_input}");
+            Debug.Log($"_controller: {_controller}");
 
         }
 
         private void Update()
         {
-            Move();
+            Move(); // use the move method when the game is running
         }
 
         private void Move()
