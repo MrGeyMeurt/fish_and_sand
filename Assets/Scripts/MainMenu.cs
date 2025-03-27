@@ -7,7 +7,7 @@ public class MainMenu : MonoBehaviour
 {
     public void PlayGame()
     {
-        SceneManager.LoadSceneAsync("ZoneDev");
+        SceneManager.LoadSceneAsync("ZoneCrea");
     }
 
     public void QuitGame()
