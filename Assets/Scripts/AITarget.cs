@@ -9,16 +9,10 @@ public class AITarget : MonoBehaviour
     [SerializeField] private float AttackDistance;
     private float m_Distance;
 
-    [Header("Navigation Settings")]
-    [SerializeField] private float moveSpeed = 3.5f;
-    [SerializeField] private float acceleration = 8f;
-
     void Start()
     {
         Debug.Log(Target.position);
         Debug.Log(m_Agent.transform.position);
-        m_Agent.speed = moveSpeed;
-        m_Agent.acceleration = acceleration;
     }
 
     void Update()
@@ -34,7 +28,6 @@ public class AITarget : MonoBehaviour
         {
             m_Agent.isStopped = false;
             m_Agent.destination = Target.position;
-            Debug.Log("Target locked");
         }
     }
 }
