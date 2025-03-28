@@ -11,14 +11,14 @@ public class GameRule : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating("SpawnFood", 0f, 2f); // call SpawnFood every 2 seconds (starting immediately)
+        InvokeRepeating("SpawnFood", 0f, 10f); // Call SpawnFood every 10 seconds (starting immediately)
     }
 
     void SpawnFood()
     {
         if (CountActiveFood() < maxRenderedFood)
         {
-            
+           
         }
     }
 
