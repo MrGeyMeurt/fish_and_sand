@@ -22,15 +22,21 @@ public class GameRule : MonoBehaviour
         }
     }
 
-    int CountActiveFood()
-    {
-        Debug.Log("Active food count: " + GameObject.FindGameObjectsWithTag("Food").Length);
-        return GameObject.FindGameObjectsWithTag("Food").Length;
-    }
-
     public void AddLvl()
     {
         lvl++;
         Debug.Log("lvl: " + lvl);
+    }
+
+    public void RemoveLvl()
+    {
+        lvl--;
+        Debug.Log("lvl: " + lvl);
+    }
+
+    public int CountActiveFood()
+    {
+        Debug.Log("Active food count: " + GameObject.FindGameObjectsWithTag("Food").Length);
+        return GameObject.FindGameObjectsWithTag("Food").Length;
     }
 }
