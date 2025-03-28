@@ -9,7 +9,7 @@ public class FoodBehavior : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             FindObjectOfType<GameRule>().AddLvl();
-            // Destroy(gameObject);
+            FindObjectOfType<GameRule>().CountActiveFood();
             gameObject.SetActive(false);
         }
     }
