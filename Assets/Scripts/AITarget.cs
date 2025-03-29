@@ -8,7 +8,7 @@ public class AITarget : MonoBehaviour
 {
     [Header("AI Settings")]
     [SerializeField] private NavMeshAgent m_Agent;
-    // [SerializeField] private Animator m_Animator;
+    [SerializeField] private Animator m_Animator;
     [Header("Player Settings")]
     [SerializeField] private Transform Target;
     [SerializeField] private float ColliderDistance;
@@ -25,7 +25,7 @@ public class AITarget : MonoBehaviour
     private float targetSprintSpeed;
     void Start()
     {
-        // m_Animator = GetComponent<Animator>();
+        m_Animator = GetComponent<Animator>();
         targetController = Target.GetComponent<ThirdPersonController>(); // Access the targetController component on the Target
         m_Agent = GetComponent<NavMeshAgent>(); // Access the NavMeshAgent component on the AI
 
@@ -34,6 +34,8 @@ public class AITarget : MonoBehaviour
         targetSprintSpeed = targetController.SprintSpeed;
 
         m_Agent.speed = targetController.MoveSpeed; // match the AI speed to the Target speed
+
+        GetComponent<Animator>().Play("Moving");
     }
 
     void Update()
@@ -55,6 +57,7 @@ public class AITarget : MonoBehaviour
         {
             hasTriggered = false;
             m_Agent.destination = Target.position; // Set the destination to the target position
+            m_Animator.SetBool("Moving", true);
             
             if(!isCooldown)
             {
