@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CinemachineTarget
   - Item
+  - Food
   layers:
   - Default
   - TransparentFX
