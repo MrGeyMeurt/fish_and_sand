@@ -8,7 +8,7 @@ public class AITarget : MonoBehaviour
 {
     [Header("AI Settings")]
     [SerializeField] private NavMeshAgent m_Agent;
-    [SerializeField] private Animator m_Animator;
+    // [SerializeField] private Animator m_Animator;
     [Header("Player Settings")]
     [SerializeField] private Transform Target;
     [SerializeField] private float ColliderDistance;
@@ -19,12 +19,13 @@ public class AITarget : MonoBehaviour
     private ThirdPersonController thirdPersonController;
     private float m_Distance;
     private bool isCooldown;
+    private bool hasTriggered;
 
     private float targetMoveSpeed;
     private float targetSprintSpeed;
     void Start()
     {
-        m_Animator = GetComponent<Animator>();
+        // m_Animator = GetComponent<Animator>();
         thirdPersonController = Target.GetComponent<ThirdPersonController>(); // Access the ThirdPersonController component on the Target
 
         targetMoveSpeed = thirdPersonController.MoveSpeed;
@@ -37,32 +38,40 @@ public class AITarget : MonoBehaviour
         
         if (m_Distance < ColliderDistance)
         {
-            thirdPersonController.MoveSpeed = 0f;
-            thirdPersonController.SprintSpeed = 0f;
-
+            if(!isCooldown && !hasTriggered)
+            {
+                hasTriggered = true;
+                thirdPersonController.MoveSpeed = 0f;
+                thirdPersonController.SprintSpeed = 0f;
+                FindObjectOfType<GameRule>().RemoveLvl();
+                StartCoroutine(Cooldown());
+            }
+        }
+        else
+        {
+            hasTriggered = false;
+            m_Agent.destination = Target.position;
+            
             if(!isCooldown)
             {
                 thirdPersonController.MoveSpeed = targetMoveSpeed;
                 thirdPersonController.SprintSpeed = targetSprintSpeed;
             }
-            
-            FindObjectOfType<GameRule>().RemoveLvl();
-            StartCoroutine(Cooldown());
-        }
-        else
-        {
-            m_Agent.destination = Target.position;
         }
     }
 
     private IEnumerator Cooldown()
     {
         isCooldown = true;
-        Debug.Log("Cooldown started");
         
         yield return new WaitForSeconds(CooldownDuration);
         
-        Debug.Log("Cooldown finished");
         isCooldown = false;
+
+        if(m_Distance < ColliderDistance)
+        {
+            thirdPersonController.MoveSpeed = targetMoveSpeed;
+            thirdPersonController.SprintSpeed = targetSprintSpeed;
+        }
     }
 }
