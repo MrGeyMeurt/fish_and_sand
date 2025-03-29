@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class GameRule : MonoBehaviour
 {
+    [Header("Game Rule Settings")]
     [SerializeField] private Transform FoodList;
+    [SerializeField] private Transform PlayerGeometry;
     [SerializeField] private int maxRenderedFood = 1;
+    [Header("Mesh levels")]
+    [SerializeField] private List<GameObject> levelObjects = new List<GameObject>();
 
-    private int lvl = 0;
+    private int lvl = 1;
     private List<GameObject> allFoodItems = new List<GameObject>();
 
     void Start()
@@ -18,6 +22,7 @@ public class GameRule : MonoBehaviour
             allFoodItems.Add(child.gameObject);
         }
         InvokeRepeating("SpawnFood", 0f, 15f); // Call SpawnFood every 15 seconds (starting immediately)
+        UpdatePlayerGeometry();
     }
 
     void SpawnFood()
@@ -37,14 +42,31 @@ public class GameRule : MonoBehaviour
 
     public void AddLvl()
     {
-        lvl++;
+        lvl = Mathf.Clamp(lvl + 1, 0, levelObjects.Count);
+        UpdatePlayerGeometry();
         Debug.Log("lvl: " + lvl);
     }
 
     public void RemoveLvl()
     {
-        lvl--;
+        lvl = Mathf.Clamp(lvl - 1, 0, levelObjects.Count);
+        UpdatePlayerGeometry();
         Debug.Log("lvl: " + lvl);
+    }
+
+    void UpdatePlayerGeometry()
+    {
+        // Desactivate every level object
+        foreach(GameObject level in levelObjects)
+        {
+            level.SetActive(false);
+        }
+
+        // Activate the current level object
+        if(lvl > 0 && lvl <= levelObjects.Count)
+        {
+            levelObjects[lvl - 1].SetActive(true);
+        }
     }
 
     public int CountActiveFood()
