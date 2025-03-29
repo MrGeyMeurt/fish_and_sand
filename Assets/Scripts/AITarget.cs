@@ -16,7 +16,7 @@ public class AITarget : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float CooldownDuration = 3f;
 
-    private ThirdPersonController thirdPersonController;
+    private ThirdPersonController targetController;
     private float m_Distance;
     private bool isCooldown;
     private bool hasTriggered;
@@ -26,23 +26,27 @@ public class AITarget : MonoBehaviour
     void Start()
     {
         // m_Animator = GetComponent<Animator>();
-        thirdPersonController = Target.GetComponent<ThirdPersonController>(); // Access the ThirdPersonController component on the Target
+        targetController = Target.GetComponent<ThirdPersonController>(); // Access the targetController component on the Target
+        m_Agent = GetComponent<NavMeshAgent>(); // Access the NavMeshAgent component on the AI
 
-        targetMoveSpeed = thirdPersonController.MoveSpeed;
-        targetSprintSpeed = thirdPersonController.SprintSpeed;
+        // Get the speed reference from the targetController
+        targetMoveSpeed = targetController.MoveSpeed;
+        targetSprintSpeed = targetController.SprintSpeed;
+
+        m_Agent.speed = targetController.MoveSpeed; // match the AI speed to the Target speed
     }
 
     void Update()
     {
-        m_Distance = Vector3.Distance(m_Agent.transform.position, Target.position);
+        m_Distance = Vector3.Distance(m_Agent.transform.position, Target.position); // Calculate the distance to the target
         
         if (m_Distance < ColliderDistance)
         {
             if(!isCooldown && !hasTriggered)
             {
                 hasTriggered = true;
-                thirdPersonController.MoveSpeed = 0f;
-                thirdPersonController.SprintSpeed = 0f;
+                targetController.MoveSpeed = 0f;
+                targetController.SprintSpeed = 0f;
                 FindObjectOfType<GameRule>().RemoveLvl();
                 StartCoroutine(Cooldown());
             }
@@ -50,12 +54,12 @@ public class AITarget : MonoBehaviour
         else
         {
             hasTriggered = false;
-            m_Agent.destination = Target.position;
+            m_Agent.destination = Target.position; // Set the destination to the target position
             
             if(!isCooldown)
             {
-                thirdPersonController.MoveSpeed = targetMoveSpeed;
-                thirdPersonController.SprintSpeed = targetSprintSpeed;
+                targetController.MoveSpeed = targetMoveSpeed;
+                targetController.SprintSpeed = targetSprintSpeed;
             }
         }
     }
@@ -68,10 +72,10 @@ public class AITarget : MonoBehaviour
         
         isCooldown = false;
 
-        if(m_Distance < ColliderDistance)
+        if(m_Distance < ColliderDistance) // If the player is still stuck then reset the speed to the original values
         {
-            thirdPersonController.MoveSpeed = targetMoveSpeed;
-            thirdPersonController.SprintSpeed = targetSprintSpeed;
+            targetController.MoveSpeed = targetMoveSpeed;
+            targetController.SprintSpeed = targetSprintSpeed;
         }
     }
 }
