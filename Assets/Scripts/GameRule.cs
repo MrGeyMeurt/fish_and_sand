@@ -4,21 +4,34 @@ using UnityEngine;
 
 public class GameRule : MonoBehaviour
 {
-    [SerializeField] private GameObject foodPrefab;
-    [SerializeField] private int maxRenderedFood = 2;
+    [SerializeField] private Transform FoodList;
+    [SerializeField] private int maxRenderedFood = 1;
 
     private int lvl = 0;
+    private List<GameObject> allFoodItems = new List<GameObject>();
 
     void Start()
     {
-        InvokeRepeating("SpawnFood", 0f, 10f); // Call SpawnFood every 10 seconds (starting immediately)
+        foreach(Transform child in FoodList)
+        {
+            child.gameObject.SetActive(false);
+            allFoodItems.Add(child.gameObject);
+        }
+        InvokeRepeating("SpawnFood", 0f, 15f); // Call SpawnFood every 15 seconds (starting immediately)
     }
 
     void SpawnFood()
     {
-        if (CountActiveFood() < maxRenderedFood)
+        if(CountActiveFood() >= maxRenderedFood) return;
+
+        // Filter all the inactive food items
+        List<GameObject> availableFood = allFoodItems.FindAll(food => !food.activeSelf);
+
+        if(availableFood.Count > 0)
         {
-           
+            // Choose a random index from the list and activate it
+            int randomIndex = Random.Range(0, availableFood.Count);
+            availableFood[randomIndex].SetActive(true);
         }
     }
 
@@ -36,7 +49,11 @@ public class GameRule : MonoBehaviour
 
     public int CountActiveFood()
     {
-        Debug.Log("Active food count: " + GameObject.FindGameObjectsWithTag("Food").Length);
-        return GameObject.FindGameObjectsWithTag("Food").Length;
+        int count = 0;
+        foreach(GameObject food in allFoodItems)
+        {
+            if(food.activeSelf) count++;
+        }
+        return count;
     }
 }
