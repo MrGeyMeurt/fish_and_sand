@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using StarterAssets;
 using System.Collections;
 using System.Linq;
+using Cinemachine;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class AITarget : MonoBehaviour
@@ -10,6 +11,7 @@ public class AITarget : MonoBehaviour
     [Header("AI Settings")]
     [SerializeField] private NavMeshAgent m_Agent;
     [SerializeField] private GameObject m_escape;
+    [SerializeField] private float m_spawnRadius = 10f;
 
     [Header("Player Settings")]
     [SerializeField] private Transform Target;
@@ -20,6 +22,8 @@ public class AITarget : MonoBehaviour
     [SerializeField] private float HitCooldownDuration = 2f;
     [SerializeField] private float EscapeCooldownDuration = 5f;
 
+    [Header("Patrol Settings")]
+    [SerializeField] private float patrolRange = 10f;
     private ThirdPersonController targetController;
     private float m_Distance;
     private bool isHitCooldown;
@@ -38,6 +42,17 @@ public class AITarget : MonoBehaviour
         targetMoveSpeed = targetController.MoveSpeed;
         targetSprintSpeed = targetController.SprintSpeed;
         m_Agent.speed = targetController.MoveSpeed * 1.2f; // match the AI speed to the Target speed
+
+        Vector3 spawnPoint;
+        if (RandomPoint(transform.position, m_spawnRadius, out spawnPoint)) // Spawn the AI at a random point within the spawn radius
+        {
+            m_Agent.transform.position = spawnPoint;
+        }
+        else
+        {
+            Debug.LogWarning("Failed to find a random point for AI spawn.");
+        }
+
     }
 
     void Update()
@@ -56,6 +71,11 @@ public class AITarget : MonoBehaviour
         {
             TrackingBehavior();
         }
+
+        if (!m_Agent.hasPath && !isHitCooldown)
+        {
+            PassiveBehavior();
+        }
     }
 
     private IEnumerator HandleHitCooldown()
@@ -73,7 +93,7 @@ public class AITarget : MonoBehaviour
         }
 
         yield return new WaitForSeconds(HitCooldownDuration);
-        
+
         isHitCooldown = false;
 
         // Re-enable movement and sprint
@@ -103,14 +123,54 @@ public class AITarget : MonoBehaviour
         }
     }
 
-    private bool IsVisible() // Check if AI is visible to the camera
+    private void PassiveBehavior()
     {
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
-        float offsetDistance = 5f;
-        return planes.All(plane => plane.GetDistanceToPoint(m_Agent.transform.position) >= -offsetDistance);
+        Vector3 point;
+        if (RandomPoint(transform.position, patrolRange, out point))
+        {
+            m_Agent.SetDestination(point);
+        }
     }
 
-    private void OnDrawGizmosSelected()
+    private bool RandomPoint(Vector3 center, float range, out Vector3 result) // Thanks to him https://youtu.be/dYs0WRzzoRc
+    {
+        Vector3 randomPoint = center + Random.insideUnitSphere * range;
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas))
+        {
+            result = hit.position;
+            return true;
+        }
+        result = Vector3.zero;
+        return false;
+    }
+
+    private bool IsVisible() // Check if AI is visible to the camera and is directly on sight of the player
+    {
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
+        float offsetDistance = 5f; // Offset of the camera detection
+        bool IsVisibleToCamera = planes.All(plane => plane.GetDistanceToPoint(m_Agent.transform.position) >= -offsetDistance);
+        if (!IsVisibleToCamera) return false;
+
+        Collider targetCollider = Target.GetComponent<Collider>();
+        if (targetCollider == null) return false;
+
+        Vector3 closestPointOnTarget = targetCollider.ClosestPoint(transform.position);
+        Vector3 directionToClosestPoint = closestPointOnTarget - transform.position;
+
+        if (Physics.Raycast(
+            transform.position, 
+            directionToClosestPoint, 
+            out RaycastHit hit, 
+            directionToClosestPoint.magnitude)
+        )
+        {
+            return hit.transform == Target; // True if the ray hits the target
+        }
+        return false;
+    }
+
+    private void OnDrawGizmosSelected() // Debugging
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, ColliderDistance);
@@ -121,7 +181,5 @@ public class AITarget : MonoBehaviour
         Gizmos.DrawLine(transform.position, m_escape.transform.position);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, 8f);
-
-
     }
 }
