@@ -3,14 +3,13 @@ using UnityEngine.AI;
 using StarterAssets;
 using System.Collections;
 using System.Linq;
-using Cinemachine;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class AITarget : MonoBehaviour
 {
     [Header("AI Settings")]
     [SerializeField] private NavMeshAgent m_Agent;
-    [SerializeField] private GameObject m_escape;
+    [SerializeField] private GameObject m_Escape;
     [SerializeField] private float m_spawnRadius = 10f;
 
     [Header("Player Settings")]
@@ -23,7 +22,7 @@ public class AITarget : MonoBehaviour
     [SerializeField] private float EscapeCooldownDuration = 5f;
 
     [Header("Patrol Settings")]
-    [SerializeField] private float patrolRange = 10f;
+    [SerializeField] private float patrolRange = 20f;
     private ThirdPersonController targetController;
     private float m_Distance;
     private bool isHitCooldown;
@@ -41,7 +40,7 @@ public class AITarget : MonoBehaviour
         // Get the speed reference from the targetController
         targetMoveSpeed = targetController.MoveSpeed;
         targetSprintSpeed = targetController.SprintSpeed;
-        m_Agent.speed = targetController.MoveSpeed * 1.2f; // match the AI speed to the Target speed
+        m_Agent.speed = targetController.MoveSpeed * 1.2f; // Match the AI speed to the Target speed
 
         Vector3 spawnPoint;
         if (RandomPoint(transform.position, m_spawnRadius, out spawnPoint)) // Spawn the AI at a random point within the spawn radius
@@ -105,12 +104,25 @@ public class AITarget : MonoBehaviour
     {
         isEscapeCooldown = true;
         isEscaping = true;
-        m_Agent.destination = m_escape.transform.position; // Set the destination to the escape point
-        m_Agent.speed = m_Agent.speed * 2;
 
-        yield return new WaitForSeconds(EscapeCooldownDuration);
+        // Set destination (random point or fallback)
+        Vector3 escapePoint;
+        bool validPoint = RandomPoint(transform.position, patrolRange, out escapePoint);
+        m_Agent.destination = validPoint ? escapePoint : m_Escape.transform.position;
+        m_Agent.speed *= 2;
+
+        float timer = 0;
         
-        m_Agent.speed = m_Agent.speed / 2;
+        // Check arrival and timeout
+        while (timer < EscapeCooldownDuration && 
+            !(!m_Agent.pathPending && m_Agent.remainingDistance <= m_Agent.stoppingDistance))
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // Reset speed and state
+        m_Agent.speed /= 2;
         isEscapeCooldown = false;
         isEscaping = false;
     }
@@ -132,14 +144,17 @@ public class AITarget : MonoBehaviour
         }
     }
 
-    private bool RandomPoint(Vector3 center, float range, out Vector3 result) // Thanks to him https://youtu.be/dYs0WRzzoRc
+    private bool RandomPoint(Vector3 center, float range, out Vector3 result, int maxAttempts = 150) // Thanks to him https://youtu.be/dYs0WRzzoRc
     {
-        Vector3 randomPoint = center + Random.insideUnitSphere * range;
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas))
+        for (int i = 0; i < maxAttempts; i++)
         {
-            result = hit.position;
-            return true;
+            Vector3 randomPoint = center + Random.insideUnitSphere * range;
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas))
+            {
+                result = hit.position;
+                return true;
+            }
         }
         result = Vector3.zero;
         return false;
@@ -158,7 +173,7 @@ public class AITarget : MonoBehaviour
         Vector3 closestPointOnTarget = targetCollider.ClosestPoint(transform.position);
         Vector3 directionToClosestPoint = closestPointOnTarget - transform.position;
 
-        if (Physics.Raycast(
+        if (Physics.Raycast( // Shoot a ray from the AI to the closest point on the target
             transform.position, 
             directionToClosestPoint, 
             out RaycastHit hit, 
@@ -170,16 +185,14 @@ public class AITarget : MonoBehaviour
         return false;
     }
 
-    private void OnDrawGizmosSelected() // Debugging
+    private void OnDrawGizmos() // Debugging
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, ColliderDistance);
-        Gizmos.DrawWireSphere(m_escape.transform.position, 0.5f);
+        Gizmos.DrawWireSphere(m_Escape.transform.position, 0.5f);
         Gizmos.color = Color.green;
         Gizmos.DrawLine(transform.position, Target.position);
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, m_escape.transform.position);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, 8f);
+        Gizmos.DrawLine(transform.position, m_Escape.transform.position);
     }
 }
