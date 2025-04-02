@@ -18,7 +18,7 @@ public class AITarget : MonoBehaviour
     [SerializeField] private float ColliderDistance;
 
     [Header("Cooldown Settings")]
-    [SerializeField] private float HitCooldownDuration = 2f;
+    [SerializeField] private float HitCooldownDuration = 3f;
     [SerializeField] private float EscapeCooldownDuration = 5f;
 
     [Header("Patrol Settings")]
