@@ -2,16 +2,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using StarterAssets;
 using System.Collections;
+using System.Collections.Generic;
 
 public class DashController : MonoBehaviour
 {
     [Header("Dash Settings")]
     [SerializeField] private float dashDistance = 5f;
     [SerializeField] private float dashDuration = 0.2f;
-    [SerializeField] private float dashCooldown = 1f;
+    [SerializeField] private float dashCooldown = .5f;
     [SerializeField] private TrailRenderer dashTrail;
 
     private CharacterController _controller;
+    private List<Gamepad> _activeGamepads = new List<Gamepad>();
     private StarterAssetsInputs _input;
     private bool _canDash = true;
     private Transform _mainCamera;
@@ -34,9 +36,26 @@ public class DashController : MonoBehaviour
         }
     }
 
+    public void SetCanDash(bool canDash)
+    {
+        _canDash = canDash;
+    }
+
     private IEnumerator PerformDash()
     {
         _canDash = false;
+
+        foreach(Gamepad gamepad in Gamepad.all)
+        {
+            try 
+            {
+                gamepad.SetMotorSpeeds(0.2f, 0.2f);
+                StartCoroutine(StopVibration(gamepad));
+            }
+            catch 
+            {
+            }
+        }
 
         // Calculate direction from camera orientation
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
@@ -65,5 +84,30 @@ public class DashController : MonoBehaviour
         
         _canDash = true;
         _input.dash = false;
+    }
+
+    private IEnumerator StopVibration(Gamepad targetGamepad)
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
+        
+        try
+        {
+            if(targetGamepad != null)
+                targetGamepad.ResetHaptics();
+        }
+        catch {}
+    }
+
+    private void OnDisable()
+    {
+        foreach(Gamepad gamepad in _activeGamepads)
+        {
+            try
+            {
+                gamepad?.ResetHaptics();
+            }
+            catch {}
+        }
+        _activeGamepads.Clear();
     }
 }

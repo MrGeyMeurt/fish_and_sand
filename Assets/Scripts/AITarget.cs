@@ -24,6 +24,9 @@ public class AITarget : MonoBehaviour
     [Header("Patrol Settings")]
     [SerializeField] private float patrolRange = 20f;
     private ThirdPersonController targetController;
+
+    [Header("Dash Settings")]
+    [SerializeField] private DashController dashController;
     private float m_Distance;
     private bool isHitCooldown;
     private bool isEscapeCooldown;
@@ -80,6 +83,8 @@ public class AITarget : MonoBehaviour
     private IEnumerator HandleHitCooldown()
     {
         isHitCooldown = true;
+        if(dashController != null)
+        dashController.SetCanDash(false);
 
         // Disable movement and sprint
         targetController.MoveSpeed = 0f;
@@ -93,6 +98,9 @@ public class AITarget : MonoBehaviour
 
         yield return new WaitForSeconds(HitCooldownDuration);
 
+        if(dashController != null)
+        dashController.SetCanDash(true);
+        
         isHitCooldown = false;
 
         // Re-enable movement and sprint
