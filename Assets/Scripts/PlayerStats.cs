@@ -25,7 +25,7 @@ public class PlayerStats : MonoBehaviour
         {
             Instance = this;
         }
-        DontDestroyOnLoad(gameObject);
+        // DontDestroyOnLoad(gameObject);
         Debug.Log($"Nom du joueur chargé : {PlayerStats.Instance.playerName}");
     }
 
