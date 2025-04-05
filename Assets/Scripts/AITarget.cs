@@ -59,6 +59,25 @@ public class AITarget : MonoBehaviour
 
     void Update()
     {
+        if (GameRule.Instance == null) return;
+        if (!GameRule.Instance.IsGamePlaying() && !GameRule.Instance.IsGameOver())
+        {
+            m_Agent.isStopped = true;
+            targetController.MoveSpeed = 0f;
+            targetController.SprintSpeed = 0f;
+        }
+        else if (GameRule.Instance.IsGameOver())
+        {
+            m_Agent.isStopped = false;
+            targetController.MoveSpeed = 0f;
+            targetController.SprintSpeed = 0f;
+        } else if (GameRule.Instance.IsGamePlaying() && !isHitCooldown && !isEscapeCooldown)
+        {
+            m_Agent.isStopped = false;
+            targetController.MoveSpeed = targetMoveSpeed;
+            targetController.SprintSpeed = targetSprintSpeed;
+        }
+
         m_Distance = Vector3.Distance(m_Agent.transform.position, Target.position); // Calculate the distance to the target
         
         if (m_Distance < ColliderDistance)
@@ -78,6 +97,8 @@ public class AITarget : MonoBehaviour
         {
             PassiveBehavior();
         }
+
+        Debug.Log(targetController.MoveSpeed + " " + targetController.SprintSpeed + " " + m_Agent.speed);
     }
 
     private IEnumerator HandleHitCooldown()
@@ -96,11 +117,13 @@ public class AITarget : MonoBehaviour
             StartCoroutine(HandleEscapeCooldown());
         }
 
+        PlayerStats.Instance.AddHit();
+
         yield return new WaitForSeconds(HitCooldownDuration);
 
         if(dashController != null)
         dashController.SetCanDash(true);
-        
+
         isHitCooldown = false;
 
         // Re-enable movement and sprint
