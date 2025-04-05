@@ -29,7 +29,9 @@ public class DashController : MonoBehaviour
 
     private void Update()
     {
-        if (_input.dash && _canDash)
+        if (GameRule.Instance == null) return;
+    
+        if (_input.dash && _canDash && GameRule.Instance.IsGamePlaying())
         {
             _input.dash = false;
             StartCoroutine(PerformDash());
@@ -42,7 +44,8 @@ public class DashController : MonoBehaviour
     }
 
     private IEnumerator PerformDash()
-    {
+    {   
+        PlayerStats.Instance.AddDash();
         _canDash = false;
 
         foreach(Gamepad gamepad in Gamepad.all)
