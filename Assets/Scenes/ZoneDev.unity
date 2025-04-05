@@ -4451,6 +4451,11 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 4125468201127464711}
+    - target: {fileID: 8363689922421425725, guid: 429b228dd6277c643aa8e514cdac1c8c,
+        type: 3}
+      propertyPath: dashController
+      value: 
+      objectReference: {fileID: 8315883268873252030}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5062,6 +5067,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3018062516859635182}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8315883268873252030 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7610759436451602226, guid: ab86180911bb38a4c9afbd1c692bc83b,
+    type: 3}
+  m_PrefabInstance: {fileID: 3018062516859635182}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061310135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74b4956496e563643b5776c0e14818a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8315883268873252032 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2253710859228966370, guid: ab86180911bb38a4c9afbd1c692bc83b,
