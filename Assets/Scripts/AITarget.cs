@@ -18,8 +18,8 @@ public class AITarget : MonoBehaviour
     [SerializeField] private float ColliderDistance;
 
     [Header("Cooldown Settings")]
-    [SerializeField] private float HitCooldownDuration = 3f;
-    [SerializeField] private float EscapeCooldownDuration = 5f;
+    [SerializeField] private float HitCooldownDuration = 4f;
+    [SerializeField] private float EscapeCooldownDuration = 7f;
 
     [Header("Patrol Settings")]
     [SerializeField] private float patrolRange = 20f;
@@ -214,14 +214,14 @@ public class AITarget : MonoBehaviour
         return false;
     }
 
-    private void OnDrawGizmos() // Debugging
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, ColliderDistance);
-        Gizmos.DrawWireSphere(m_Escape.transform.position, 0.5f);
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, Target.position);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, m_Escape.transform.position);
-    }
+    // private void OnDrawGizmos() // Debugging
+    // {
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawWireSphere(transform.position, ColliderDistance);
+    //     Gizmos.DrawWireSphere(m_Escape.transform.position, 0.5f);
+    //     Gizmos.color = Color.green;
+    //     Gizmos.DrawLine(transform.position, Target.position);
+    //     Gizmos.color = Color.blue;
+    //     Gizmos.DrawLine(transform.position, m_Escape.transform.position);
+    // }
 }
