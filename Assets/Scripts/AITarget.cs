@@ -97,8 +97,6 @@ public class AITarget : MonoBehaviour
         {
             PassiveBehavior();
         }
-
-        Debug.Log(targetController.MoveSpeed + " " + targetController.SprintSpeed + " " + m_Agent.speed);
     }
 
     private IEnumerator HandleHitCooldown()
