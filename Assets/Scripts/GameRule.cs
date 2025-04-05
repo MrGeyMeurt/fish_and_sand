@@ -63,6 +63,8 @@ public class GameRule : MonoBehaviour
 
     private void Awake()
     {
+        Time.timeScale = 1f;
+
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
