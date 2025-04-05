@@ -30,7 +30,7 @@ public class GameOverUI : MonoBehaviour
         playTimeText.text = $"{timeSpan.Minutes:00}:{timeSpan.Seconds:00}";
         
         playerNameText.text = PlayerStats.Instance.playerName;
-        scoreText.text = PlayerStats.Instance.score.ToString("D6");
+        scoreText.text = PlayerStats.Instance.score.ToString();
         hitsTakenText.text = PlayerStats.Instance.hitsTaken.ToString();
         dashCountText.text = PlayerStats.Instance.dashCount.ToString();
     }
