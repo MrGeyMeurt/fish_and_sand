@@ -12,6 +12,7 @@ public class PlayerStats : MonoBehaviour
     public int score;
     public int hitsTaken;
     public int dashCount;
+    public bool isGameLoose = false;
 
     private bool isCountingTime = true;
 
@@ -66,5 +67,11 @@ public class PlayerStats : MonoBehaviour
             dashCount++;
         }
     }
+
+    public void GameOver()
+    {
+        isGameLoose = true;
+    }
+
     public void StopCountingTime() => isCountingTime = false;
 }
