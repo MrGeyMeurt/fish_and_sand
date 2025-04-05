@@ -25,10 +25,10 @@ public class GameRule : MonoBehaviour
     [SerializeField] private Transform CameraPool;
     [SerializeField] private GameObject Exit;
     [SerializeField] private int maxRenderedFood = 1;
-    [SerializeField] private float WaitingToStartTimer = 1f;
-    [SerializeField] private float CountdownToStartTimer = 2f;
-    [SerializeField] private float GamePlayingTimer = 120f;
-    [SerializeField] private float GameOverTimer = 10f;
+    [SerializeField] private float WaitingToStartTimer = 2f;
+    [SerializeField] private float CountdownToStartTimer = 5f;
+    [SerializeField] private float GamePlayingTimer = 300f;
+    [SerializeField] private float GameOverTimer = 20f;
 
     [Header("Game Over Screen")]
     [SerializeField] private GameOverUI gameOverUI;
@@ -36,6 +36,7 @@ public class GameRule : MonoBehaviour
     
     [Header("UI")]
     [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject playingHUD;
 
     [Header("Mesh levels")]
     [SerializeField] private List<GameObject> levelObjects = new List<GameObject>();
@@ -87,7 +88,8 @@ public class GameRule : MonoBehaviour
     void Start()
     {
         Exit.gameObject.SetActive(false);
-
+        playingHUD.SetActive(true);
+        
         foreach(Transform child in FoodPool)
         {
             child.gameObject.SetActive(false);
@@ -151,6 +153,8 @@ public class GameRule : MonoBehaviour
                     GamePause();
                 }
 
+                playingHUD.SetActive(false);
+
                 int[] timeThresholds = { 15, 10, 5 };
                 int[] priorities = { 2, 3, 4 };
 
@@ -187,7 +191,6 @@ public class GameRule : MonoBehaviour
                 }
                 break;
         }
-        Debug.Log(state);
 
         bool usingGamepad = Gamepad.current != null;
         if(usingGamepad)
@@ -307,6 +310,7 @@ public class GameRule : MonoBehaviour
 
         if (lvl == 0)
         {
+            PlayerStats.Instance.isGameLoose = true;
             SetGameOver();
         }
     }
