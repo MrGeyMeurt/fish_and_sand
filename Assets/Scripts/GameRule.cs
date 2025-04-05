@@ -1,28 +1,218 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using StarterAssets;
+using UnityEngine.InputSystem;
+using System;
+using TMPro;
+
+[System.Serializable]
+public class ObjectPool
+{
+    public string poolName;
+    public Transform parentTransform;
+    public int maxRendered;
+    [HideInInspector] public List<GameObject> items = new List<GameObject>();
+}
 
 public class GameRule : MonoBehaviour
 {
     [Header("Game Rule Settings")]
-    [SerializeField] private Transform FoodList;
+    [SerializeField] private StarterAssetsInputs _input;
     [SerializeField] private Transform PlayerGeometry;
+    [SerializeField] private Transform FoodList;
+    [SerializeField] private GameObject Exit;
     [SerializeField] private int maxRenderedFood = 1;
+
+    [Header("Game Over Screen")]
+    [SerializeField] private GameOverUI gameOverUI;
+    [SerializeField] private float gameOverDelay = 3f;
+    
+    [Header("UI")]
+    [SerializeField] private GameObject pauseMenu;
+
     [Header("Mesh levels")]
     [SerializeField] private List<GameObject> levelObjects = new List<GameObject>();
 
+    [Header("Map Layout")]
+    // [SerializeField] private Transform ObjectList;
+    [SerializeField] private List<ObjectPool> objectPools = new List<ObjectPool>();
+    // [SerializeField] private int maxRenderedObjects = 5;
+
     private int lvl = 1;
     private List<GameObject> allFoodItems = new List<GameObject>();
+    private List<GameObject> allObjectItems = new List<GameObject>();
+    public static GameRule Instance { get; private set; }
+    public event EventHandler OnStateChanged;
+    private enum State { 
+        WaitingToStart,
+        CountdownToStart,
+        GamePlaying,
+        GameOver,
+        GamePaused
+    }
+    private State state;
+    private CharacterController _controller;
+    private float WaitingToStartTimer = 1f;
+    private float CountdownToStartTimer = 2f;
+    private float GamePlayingTimer = 120f;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if(player != null)
+        {
+            _input = player.GetComponent<StarterAssetsInputs>();
+        }
+        else
+        {
+            Debug.LogError("Player introuvable dans la scène !");
+        }
+
+        state = State.WaitingToStart;
+    }
 
     void Start()
     {
+        Exit.gameObject.SetActive(false);
+
         foreach(Transform child in FoodList)
         {
             child.gameObject.SetActive(false);
             allFoodItems.Add(child.gameObject);
         }
+
+        foreach(ObjectPool pool in objectPools)
+        {
+            foreach(Transform child in pool.parentTransform)
+            {
+                child.gameObject.SetActive(false);
+                pool.items.Add(child.gameObject);
+            }
+        }
+
         InvokeRepeating("SpawnFood", 0f, 15f); // Call SpawnFood every 15 seconds (starting immediately)
         UpdatePlayerGeometry();
+        MapLayout();
+    }
+
+    private void Update()
+    {
+        switch(state)
+        {
+            case State.WaitingToStart:
+                WaitingToStartTimer -= Time.deltaTime;
+                if(WaitingToStartTimer <= 0f)
+                {
+                    state = State.CountdownToStart;
+                    OnStateChanged?.Invoke(this, EventArgs.Empty);
+                }
+                _input.pause = false;
+                break;
+            case State.CountdownToStart:
+                CountdownToStartTimer -= Time.deltaTime;
+                if(CountdownToStartTimer <= 0f)
+                {
+                    state = State.GamePlaying;
+                    OnStateChanged?.Invoke(this, EventArgs.Empty);
+                }
+                _input.pause = false;
+                break;
+            case State.GamePlaying:
+                GamePlayingTimer -= Time.deltaTime;
+                if(_input.pause)
+                {
+                    _input.pause = false;
+                    GamePause();
+                }
+                if(GamePlayingTimer <= 0f)
+                {
+                    state = State.GameOver;
+                    OnStateChanged?.Invoke(this, EventArgs.Empty);
+                }
+                break;
+            case State.GameOver:
+                _input.pause = false;
+                break;
+            case State.GamePaused:
+                if(_input.pause)
+                {
+                    _input.pause = false;
+                    GamePause();
+                }
+                break;
+        }
+        Debug.Log(state);
+
+        bool usingGamepad = Gamepad.current != null;
+        if(usingGamepad)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = false;
+        }
+    }
+
+    public bool IsGamePlaying()
+    {
+        return state == State.GamePlaying;
+    }
+
+    public bool IsGameOver()
+    {
+        return state == State.GameOver;
+    }
+
+    public bool IsCountdownToStartActive()
+    {
+        return state == State.CountdownToStart;
+    }
+
+    public float GetCountdownToStartTimer()
+    {
+        return CountdownToStartTimer;
+    }
+
+    public void SetGameOver()
+    {
+        StartCoroutine(GameOverSequence());
+    }
+
+    private IEnumerator GameOverSequence()
+    {
+        state = State.GameOver;
+        PlayerStats.Instance.StopCountingTime();
+        
+        yield return new WaitForSeconds(gameOverDelay);
+        gameOverUI.ShowGameOver();
+    }
+
+    public void GamePause()
+    {
+        if(state != State.GamePaused)
+        {
+            state = State.GamePaused;
+            Time.timeScale = 0f;
+            pauseMenu.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = (Gamepad.current == null);
+        }
+        else if(state == State.GamePaused)
+        {
+            state = State.GamePlaying;
+            pauseMenu.SetActive(false);
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     void SpawnFood()
@@ -35,8 +225,29 @@ public class GameRule : MonoBehaviour
         if(availableFood.Count > 0)
         {
             // Choose a random index from the list and activate it
-            int randomIndex = Random.Range(0, availableFood.Count);
+            int randomIndex = UnityEngine.Random.Range(0, availableFood.Count);
             availableFood[randomIndex].SetActive(true);
+        }
+    }
+
+    void MapLayout()
+    {
+        foreach(ObjectPool pool in objectPools)
+        {
+            foreach(GameObject item in pool.items)
+            {
+                item.SetActive(false);
+            }
+
+            List<GameObject> availableItems = new List<GameObject>(pool.items);
+            for(int i = 0; i < pool.maxRendered; i++)
+            {
+                if(availableItems.Count == 0) break;
+                
+                int randomIndex = UnityEngine.Random.Range(0, availableItems.Count);
+                availableItems[randomIndex].SetActive(true);
+                availableItems.RemoveAt(randomIndex);
+            }
         }
     }
 
@@ -44,7 +255,15 @@ public class GameRule : MonoBehaviour
     {
         lvl = Mathf.Clamp(lvl + 1, 0, levelObjects.Count);
         UpdatePlayerGeometry();
-        Debug.Log("lvl: " + lvl);
+
+        PlayerStats.Instance.AddScore(100);
+    
+        Debug.Log($"lvl: {lvl} (+100 points)");
+
+        if(lvl == 3)
+        {
+            Exit.gameObject.SetActive(true);
+        }
     }
 
     public void RemoveLvl()
@@ -52,17 +271,22 @@ public class GameRule : MonoBehaviour
         lvl = Mathf.Clamp(lvl - 1, 0, levelObjects.Count);
         UpdatePlayerGeometry();
         Debug.Log("lvl: " + lvl);
+
+        if (lvl == 0)
+        {
+            SetGameOver();
+        }
     }
 
     void UpdatePlayerGeometry()
     {
-        // Desactivate every level object
+        // Desactivate every level mesh
         foreach(GameObject level in levelObjects)
         {
             level.SetActive(false);
         }
 
-        // Activate the current level object
+        // Activate the current level mesh
         if(lvl > 0 && lvl <= levelObjects.Count)
         {
             levelObjects[lvl - 1].SetActive(true);
