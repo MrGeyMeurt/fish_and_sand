@@ -5,6 +5,7 @@ using StarterAssets;
 using UnityEngine.InputSystem;
 using System;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class ObjectPool
@@ -23,10 +24,14 @@ public class GameRule : MonoBehaviour
     [SerializeField] private Transform FoodList;
     [SerializeField] private GameObject Exit;
     [SerializeField] private int maxRenderedFood = 1;
+    [SerializeField] private float WaitingToStartTimer = 1f;
+    [SerializeField] private float CountdownToStartTimer = 2f;
+    [SerializeField] private float GamePlayingTimer = 120f;
+    [SerializeField] private float GameOverTimer = 10f;
 
     [Header("Game Over Screen")]
     [SerializeField] private GameOverUI gameOverUI;
-    [SerializeField] private float gameOverDelay = 3f;
+    [SerializeField] private float gameOverDelay = 5f;
     
     [Header("UI")]
     [SerializeField] private GameObject pauseMenu;
@@ -53,9 +58,6 @@ public class GameRule : MonoBehaviour
     }
     private State state;
     private CharacterController _controller;
-    private float WaitingToStartTimer = 1f;
-    private float CountdownToStartTimer = 2f;
-    private float GamePlayingTimer = 120f;
 
     private void Awake()
     {
@@ -141,7 +143,28 @@ public class GameRule : MonoBehaviour
                 }
                 break;
             case State.GameOver:
-                _input.pause = false;
+                GameOverTimer -= Time.deltaTime;
+                if(_input.pause)
+                {
+                    _input.pause = false;
+                    GamePause();
+                }
+                if(GameOverTimer <= 15f)
+                {
+                    Debug.Log("Game Over Timer: " + GameOverTimer);
+                }
+                if(GameOverTimer <= 10f)
+                {
+                    Debug.Log("Game Over Timer: " + GameOverTimer);
+                }
+                if(GameOverTimer <= 5f)
+                {
+                    Debug.Log("Game Over Timer: " + GameOverTimer);
+                }
+                if(GameOverTimer <= 0f)
+                {
+                    SceneManager.LoadScene("MainMenu");
+                }
                 break;
             case State.GamePaused:
                 if(_input.pause)
@@ -258,8 +281,6 @@ public class GameRule : MonoBehaviour
 
         PlayerStats.Instance.AddScore(100);
     
-        Debug.Log($"lvl: {lvl} (+100 points)");
-
         if(lvl == 3)
         {
             Exit.gameObject.SetActive(true);
@@ -270,7 +291,6 @@ public class GameRule : MonoBehaviour
     {
         lvl = Mathf.Clamp(lvl - 1, 0, levelObjects.Count);
         UpdatePlayerGeometry();
-        Debug.Log("lvl: " + lvl);
 
         if (lvl == 0)
         {
