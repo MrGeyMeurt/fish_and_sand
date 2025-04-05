@@ -192,7 +192,7 @@ public class AITarget : MonoBehaviour
     private bool IsVisible() // Check if AI is visible to the camera and is directly on sight of the player
     {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
-        float offsetDistance = 5f; // Offset of the camera detection
+        float offsetDistance = 4f; // Offset of the camera detection
         bool IsVisibleToCamera = planes.All(plane => plane.GetDistanceToPoint(m_Agent.transform.position) >= -offsetDistance);
         if (!IsVisibleToCamera) return false;
 
