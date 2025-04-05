@@ -21,7 +21,8 @@ public class GameRule : MonoBehaviour
     [Header("Game Rule Settings")]
     [SerializeField] private StarterAssetsInputs _input;
     [SerializeField] private Transform PlayerGeometry;
-    [SerializeField] private Transform FoodList;
+    [SerializeField] private Transform FoodPool;
+    [SerializeField] private Transform CameraPool;
     [SerializeField] private GameObject Exit;
     [SerializeField] private int maxRenderedFood = 1;
     [SerializeField] private float WaitingToStartTimer = 1f;
@@ -87,7 +88,7 @@ public class GameRule : MonoBehaviour
     {
         Exit.gameObject.SetActive(false);
 
-        foreach(Transform child in FoodList)
+        foreach(Transform child in FoodPool)
         {
             child.gameObject.SetActive(false);
             allFoodItems.Add(child.gameObject);
@@ -149,18 +150,30 @@ public class GameRule : MonoBehaviour
                     _input.pause = false;
                     GamePause();
                 }
-                if(GameOverTimer <= 15f)
+
+                int[] timeThresholds = { 15, 10, 5 };
+                int[] priorities = { 2, 3, 4 };
+
+                for (int i = 0; i < timeThresholds.Length; i++)
                 {
-                    Debug.Log("Game Over Timer: " + GameOverTimer);
+                    if (GameOverTimer <= timeThresholds[i])
+                    {
+                        int childIndex = 0;
+                        foreach (Transform child in CameraPool)
+                        {
+                            if (childIndex == i)
+                            {
+                                var camera = child.GetComponent<Camera>();
+                                if (camera != null)
+                                {
+                                    camera.depth = priorities[i];
+                                }
+                            }
+                            childIndex++;
+                        }
+                    }
                 }
-                if(GameOverTimer <= 10f)
-                {
-                    Debug.Log("Game Over Timer: " + GameOverTimer);
-                }
-                if(GameOverTimer <= 5f)
-                {
-                    Debug.Log("Game Over Timer: " + GameOverTimer);
-                }
+
                 if(GameOverTimer <= 0f)
                 {
                     SceneManager.LoadScene("MainMenu");
