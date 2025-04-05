@@ -7,10 +7,12 @@ using System.Collections.Generic;
 public class DashController : MonoBehaviour
 {
     [Header("Dash Settings")]
-    [SerializeField] private float dashDistance = 5f;
+    [SerializeField] private float dashDistance = 10f;
     [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float dashCooldown = .5f;
     [SerializeField] private TrailRenderer dashTrail;
+    [SerializeField] private GameObject dashActive;
+    [SerializeField] private GameObject dashDisabled;
 
     private CharacterController _controller;
     private List<Gamepad> _activeGamepads = new List<Gamepad>();
@@ -23,6 +25,8 @@ public class DashController : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<StarterAssetsInputs>();
         _mainCamera = Camera.main.transform;
+        dashActive.SetActive(true);
+        dashDisabled.SetActive(false);
 
         if (dashTrail != null) dashTrail.emitting = false;
     }
@@ -47,6 +51,8 @@ public class DashController : MonoBehaviour
     {   
         PlayerStats.Instance.AddDash();
         _canDash = false;
+        dashActive.SetActive(false);
+        dashDisabled.SetActive(true);
 
         foreach(Gamepad gamepad in Gamepad.all)
         {
@@ -86,6 +92,8 @@ public class DashController : MonoBehaviour
         yield return new WaitForSeconds(dashCooldown);
         
         _canDash = true;
+        dashDisabled.SetActive(false);
+        dashActive.SetActive(true);
         _input.dash = false;
     }
 
