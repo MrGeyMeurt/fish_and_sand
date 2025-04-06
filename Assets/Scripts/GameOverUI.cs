@@ -15,11 +15,6 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hitsTakenText;
     [SerializeField] private TextMeshProUGUI dashCountText;
 
-    private void Start()
-    {
-        gameObject.SetActive(false);
-    }
-
     public void ShowGameOver()
     {
         gameObject.SetActive(true);
