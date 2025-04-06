@@ -37,6 +37,8 @@ public class GameRule : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject playingHUD;
+    [SerializeField] private GameObject gameOverHUD;
+    [SerializeField] private GameObject countDownText;
 
     [Header("Mesh levels")]
     [SerializeField] private List<GameObject> levelObjects = new List<GameObject>();
@@ -91,7 +93,12 @@ public class GameRule : MonoBehaviour
     void Start()
     {
         Exit.gameObject.SetActive(false);
+        countDownText.SetActive(true);
         playingHUD.SetActive(true);
+        gameOverHUD.SetActive(false);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = false;
         
         foreach(Transform child in FoodPool)
         {
@@ -206,18 +213,16 @@ public class GameRule : MonoBehaviour
                 }
                 break;
         }
-
-        bool usingGamepad = Gamepad.current != null;
-        if(usingGamepad)
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = false;
-        }
     }
 
     public bool IsGamePlaying()
     {
         return state == State.GamePlaying;
+    }
+
+    public bool IsGamePaused()
+    {
+        return state == State.GamePaused;
     }
 
     public bool IsGameOver()
@@ -256,16 +261,12 @@ public class GameRule : MonoBehaviour
             state = State.GamePaused;
             Time.timeScale = 0f;
             pauseMenu.SetActive(true);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = (Gamepad.current == null);
         }
         else if(state == State.GamePaused)
         {
             state = State.GamePlaying;
             pauseMenu.SetActive(false);
             Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
     }
 
