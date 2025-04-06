@@ -18,12 +18,15 @@ public class AITarget : MonoBehaviour
     [SerializeField] private float ColliderDistance;
 
     [Header("Cooldown Settings")]
-    [SerializeField] private float HitCooldownDuration = 3f;
-    [SerializeField] private float EscapeCooldownDuration = 5f;
+    [SerializeField] private float HitCooldownDuration = 4f;
+    [SerializeField] private float EscapeCooldownDuration = 7f;
 
     [Header("Patrol Settings")]
     [SerializeField] private float patrolRange = 20f;
     private ThirdPersonController targetController;
+
+    [Header("Dash Settings")]
+    [SerializeField] private DashController dashController;
     private float m_Distance;
     private bool isHitCooldown;
     private bool isEscapeCooldown;
@@ -56,6 +59,25 @@ public class AITarget : MonoBehaviour
 
     void Update()
     {
+        if (GameRule.Instance == null) return;
+        if (!GameRule.Instance.IsGamePlaying() && !GameRule.Instance.IsGameOver())
+        {
+            m_Agent.isStopped = true;
+            targetController.MoveSpeed = 0f;
+            targetController.SprintSpeed = 0f;
+        }
+        else if (GameRule.Instance.IsGameOver())
+        {
+            m_Agent.isStopped = false;
+            targetController.MoveSpeed = 0f;
+            targetController.SprintSpeed = 0f;
+        } else if (GameRule.Instance.IsGamePlaying() && !isHitCooldown && !isEscapeCooldown)
+        {
+            m_Agent.isStopped = false;
+            targetController.MoveSpeed = targetMoveSpeed;
+            targetController.SprintSpeed = targetSprintSpeed;
+        }
+
         m_Distance = Vector3.Distance(m_Agent.transform.position, Target.position); // Calculate the distance to the target
         
         if (m_Distance < ColliderDistance)
@@ -80,6 +102,8 @@ public class AITarget : MonoBehaviour
     private IEnumerator HandleHitCooldown()
     {
         isHitCooldown = true;
+        if(dashController != null)
+        dashController.SetCanDash(false);
 
         // Disable movement and sprint
         targetController.MoveSpeed = 0f;
@@ -91,7 +115,12 @@ public class AITarget : MonoBehaviour
             StartCoroutine(HandleEscapeCooldown());
         }
 
+        PlayerStats.Instance.AddHit();
+
         yield return new WaitForSeconds(HitCooldownDuration);
+
+        if(dashController != null)
+        dashController.SetCanDash(true);
 
         isHitCooldown = false;
 
@@ -144,7 +173,7 @@ public class AITarget : MonoBehaviour
         }
     }
 
-    private bool RandomPoint(Vector3 center, float range, out Vector3 result, int maxAttempts = 150) // Thanks to him https://youtu.be/dYs0WRzzoRc
+    private bool RandomPoint(Vector3 center, float range, out Vector3 result, int maxAttempts = 30) // Thanks to him https://youtu.be/dYs0WRzzoRc
     {
         for (int i = 0; i < maxAttempts; i++)
         {
@@ -163,7 +192,7 @@ public class AITarget : MonoBehaviour
     private bool IsVisible() // Check if AI is visible to the camera and is directly on sight of the player
     {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
-        float offsetDistance = 5f; // Offset of the camera detection
+        float offsetDistance = 4f; // Offset of the camera detection
         bool IsVisibleToCamera = planes.All(plane => plane.GetDistanceToPoint(m_Agent.transform.position) >= -offsetDistance);
         if (!IsVisibleToCamera) return false;
 
@@ -185,14 +214,14 @@ public class AITarget : MonoBehaviour
         return false;
     }
 
-    private void OnDrawGizmos() // Debugging
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, ColliderDistance);
-        Gizmos.DrawWireSphere(m_Escape.transform.position, 0.5f);
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, Target.position);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, m_Escape.transform.position);
-    }
+    // private void OnDrawGizmos() // Debugging
+    // {
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawWireSphere(transform.position, ColliderDistance);
+    //     Gizmos.DrawWireSphere(m_Escape.transform.position, 0.5f);
+    //     Gizmos.color = Color.green;
+    //     Gizmos.DrawLine(transform.position, Target.position);
+    //     Gizmos.color = Color.blue;
+    //     Gizmos.DrawLine(transform.position, m_Escape.transform.position);
+    // }
 }

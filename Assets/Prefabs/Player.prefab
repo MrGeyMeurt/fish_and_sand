@@ -57,7 +57,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 151398697057018441}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5257311, y: 0, z: 0, w: 0.85065085}
+  m_LocalRotation: {x: 0.5257311, y: -0, z: -0, w: 0.85065085}
   m_LocalPosition: {x: 0, y: 19.07, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1062,6 +1062,7 @@ MonoBehaviour:
   jump: 0
   sprint: 0
   dash: 0
+  pause: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -1180,6 +1181,8 @@ MonoBehaviour:
   dashDuration: 0.2
   dashCooldown: 2
   dashTrail: {fileID: 6948550282650925208}
+  dashActive: {fileID: 0}
+  dashDisabled: {fileID: 0}
 --- !u!1 &2619696588667220963
 GameObject:
   m_ObjectHideFlags: 0
@@ -2923,7 +2926,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5049208675480934422}
   - component: {fileID: 5983162465605040234}
-  - component: {fileID: 8051596979236867134}
   m_Layer: 0
   m_Name: Level1
   m_TagString: Untagged
@@ -3069,20 +3071,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.000000029802322, y: -0.09214255, z: 0.026248664}
     m_Extent: {x: 0.52818465, y: 0.88092995, z: 0.22050178}
   m_DirtyAABB: 0
---- !u!114 &8051596979236867134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8015044923106728402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6004febd902661d45a358d7974c352ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sharedMesh: {fileID: 4698152120088058464, guid: 36078ab0369161e49a29d349ae3e0739,
-    type: 3}
 --- !u!1 &8185514646341957709
 GameObject:
   m_ObjectHideFlags: 0
