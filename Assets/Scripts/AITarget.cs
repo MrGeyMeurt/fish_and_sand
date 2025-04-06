@@ -173,7 +173,7 @@ public class AITarget : MonoBehaviour
         }
     }
 
-    private bool RandomPoint(Vector3 center, float range, out Vector3 result, int maxAttempts = 150) // Thanks to him https://youtu.be/dYs0WRzzoRc
+    private bool RandomPoint(Vector3 center, float range, out Vector3 result, int maxAttempts = 30) // Thanks to him https://youtu.be/dYs0WRzzoRc
     {
         for (int i = 0; i < maxAttempts; i++)
         {

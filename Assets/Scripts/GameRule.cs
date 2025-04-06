@@ -49,6 +49,7 @@ public class GameRule : MonoBehaviour
     private int lvl = 1;
     private List<GameObject> allFoodItems = new List<GameObject>();
     private List<GameObject> allObjectItems = new List<GameObject>();
+    private Dictionary<int, Camera> priorityCameras;
     public static GameRule Instance { get; private set; }
     public event EventHandler OnStateChanged;
     private enum State { 
@@ -105,6 +106,18 @@ public class GameRule : MonoBehaviour
                 child.gameObject.SetActive(false);
                 pool.items.Add(child.gameObject);
             }
+        }
+
+        priorityCameras = new Dictionary<int, Camera>();
+        int childIndex = 0;
+        foreach (Transform child in CameraPool)
+        {
+            var cam = child.GetComponent<Camera>();
+            if (cam != null)
+            {
+                priorityCameras.Add(childIndex, cam);
+            }
+            childIndex++;
         }
 
         InvokeRepeating("SpawnFood", 0f, 15f); // Call SpawnFood every 15 seconds (starting immediately)
@@ -329,6 +342,11 @@ public class GameRule : MonoBehaviour
         if(lvl > 0 && lvl <= levelObjects.Count)
         {
             levelObjects[lvl - 1].SetActive(true);
+        }
+
+        if(lvl != 3)
+        {
+            Exit.gameObject.SetActive(false);
         }
     }
 
