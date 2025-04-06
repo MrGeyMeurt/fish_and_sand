@@ -22,6 +22,8 @@ public class Pause : MonoBehaviour
         {
             _input.pause = false;
             gameRule?.GamePause();
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 }
