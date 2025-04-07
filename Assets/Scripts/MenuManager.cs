@@ -6,14 +6,47 @@ public class MenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject _defaultButton;
     [SerializeField] private EventSystem _eventSystem;
+    [SerializeField] private float _inputDeadzone = 0.1f;
+    
+    private bool _hadSelectionThisFrame;
+    private float _lastInputTime;
 
-    void Update()
+    private void Update()
     {
-        bool usingGamepad = Gamepad.current != null;
+        if (Gamepad.current == null || _eventSystem == null)
+            return;
 
-        if (usingGamepad && _eventSystem != null && _eventSystem.currentSelectedGameObject == null)
+        _hadSelectionThisFrame = _eventSystem.currentSelectedGameObject != null;
+
+        if (!_hadSelectionThisFrame && CheckNavigationInput())
         {
-            _eventSystem.SetSelectedGameObject(_defaultButton);
+            SetDefaultSelection();
         }
+
+        if (Time.time - _lastInputTime > 0.2f)
+        {
+            _hadSelectionThisFrame = false;
+        }
+    }
+
+    private void SetDefaultSelection()
+    {
+        _eventSystem.SetSelectedGameObject(_defaultButton);
+        _lastInputTime = Time.time;
+    }
+
+    private bool CheckNavigationInput()
+    {
+        Vector2 leftStick = ApplyDeadzone(Gamepad.current.leftStick.ReadValue());
+        Vector2 dpad = ApplyDeadzone(Gamepad.current.dpad.ReadValue());
+
+        bool hasInput = leftStick != Vector2.zero || dpad != Vector2.zero;
+        
+        return hasInput && !_hadSelectionThisFrame;
+    }
+
+    private Vector2 ApplyDeadzone(Vector2 input)
+    {
+        return input.magnitude < _inputDeadzone ? Vector2.zero : input.normalized;
     }
 }
