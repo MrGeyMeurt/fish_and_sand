@@ -3,12 +3,18 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public struct DeviceImageEntry
+{
+    public Image image;
+    public Sprite playstationSprite;
+    public Sprite keyboardSprite;
+}
+
 public class DeviceCheck : MonoBehaviour
 {
-    [SerializeField] private Image Image;
-    [SerializeField] private Sprite playstationSprite;
-    [SerializeField] private Sprite keyboardSprite;
-
+    [SerializeField] private DeviceImageEntry[] deviceImages;
+    
     private bool lastInputWasGamepad;
     private bool hadAnyInput;
 
@@ -39,7 +45,6 @@ public class DeviceCheck : MonoBehaviour
                 Cursor.lockState = CursorLockMode.None;
             }
         }
-        
         else
         {
             Cursor.visible = false;
@@ -65,19 +70,16 @@ public class DeviceCheck : MonoBehaviour
 
     private void UpdateDisplay()
     {
-        Color color = Image.color;
-            
-        if (lastInputWasGamepad)
+        foreach (var entry in deviceImages)
         {
-            Image.sprite = playstationSprite;
-            color.a = playstationSprite != null ? 1f : 0f;
+            if (entry.image == null) continue;
+
+            Sprite targetSprite = lastInputWasGamepad ? entry.playstationSprite : entry.keyboardSprite;
+            entry.image.sprite = targetSprite;
+
+            Color color = entry.image.color;
+            color.a = targetSprite != null ? 1f : 0f;
+            entry.image.color = color;
         }
-        else
-        {
-            Image.sprite = keyboardSprite;
-            color.a = keyboardSprite != null ? 1f : 0f;
-        }
-        
-        Image.color = color;
     }
 }
