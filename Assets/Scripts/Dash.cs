@@ -113,6 +113,8 @@ public class DashController : MonoBehaviour
     {
         currentDashes = 0;
         _rechargeTimes.Clear();
+        _rechargeTimes.Enqueue(Time.time + dashCooldown);
+        _rechargeTimes.Enqueue(Time.time + dashCooldown * 2);
         UpdateDashUI();
     }
 
