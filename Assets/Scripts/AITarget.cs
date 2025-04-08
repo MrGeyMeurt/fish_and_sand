@@ -11,6 +11,7 @@ public class AITarget : MonoBehaviour
     [SerializeField] private NavMeshAgent m_Agent;
     [SerializeField] private GameObject m_Escape;
     [SerializeField] private float m_spawnRadius = 10f;
+    [SerializeField] private float offsetDistance = 4f;
 
     [Header("Player Settings")]
     [SerializeField] private Transform Target;
@@ -103,7 +104,7 @@ public class AITarget : MonoBehaviour
     {
         isHitCooldown = true;
         if(dashController != null)
-        dashController.SetCanDash(false);
+        dashController.ResetDashes();
 
         // Disable movement and sprint
         targetController.MoveSpeed = 0f;
@@ -120,7 +121,6 @@ public class AITarget : MonoBehaviour
         yield return new WaitForSeconds(HitCooldownDuration);
 
         if(dashController != null)
-        dashController.SetCanDash(true);
 
         isHitCooldown = false;
 
@@ -192,7 +192,6 @@ public class AITarget : MonoBehaviour
     private bool IsVisible() // Check if AI is visible to the camera and is directly on sight of the player
     {
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(mainCamera);
-        float offsetDistance = 4f; // Offset of the camera detection
         bool IsVisibleToCamera = planes.All(plane => plane.GetDistanceToPoint(m_Agent.transform.position) >= -offsetDistance);
         if (!IsVisibleToCamera) return false;
 

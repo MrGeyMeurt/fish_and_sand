@@ -9,51 +9,63 @@ public class DashController : MonoBehaviour
     [Header("Dash Settings")]
     [SerializeField] private float dashDistance = 10f;
     [SerializeField] private float dashDuration = 0.2f;
-    [SerializeField] private float dashCooldown = .5f;
+    [SerializeField] private float dashCooldown = 6f;
     [SerializeField] private TrailRenderer dashTrail;
-    [SerializeField] private GameObject dashActive;
-    [SerializeField] private GameObject dashDisabled;
+    [SerializeField] private int maxDashes = 2;
+
+    [Header("UI Elements")]
+    [SerializeField] private GameObject dash1Active;
+    [SerializeField] private GameObject dash1Disabled;
+    [SerializeField] private GameObject dash2Active;
+    [SerializeField] private GameObject dash2Disabled;
 
     private CharacterController _controller;
-    private List<Gamepad> _activeGamepads = new List<Gamepad>();
     private StarterAssetsInputs _input;
-    private bool _canDash = true;
     private Transform _mainCamera;
+    private Queue<float> _rechargeTimes = new Queue<float>();
+    private int currentDashes;
 
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<StarterAssetsInputs>();
         _mainCamera = Camera.main.transform;
-        dashActive.SetActive(true);
-        dashDisabled.SetActive(false);
-
+        
+        currentDashes = maxDashes;
+        UpdateDashUI();
         if (dashTrail != null) dashTrail.emitting = false;
     }
 
     private void Update()
     {
-        if (GameRule.Instance == null) return;
-    
-        if (_input.dash && _canDash && GameRule.Instance.IsGamePlaying())
+        if (GameRule.Instance == null || !GameRule.Instance.IsGamePlaying()) return;
+
+        // Reload dashes
+        while(_rechargeTimes.Count > 0 && Time.time >= _rechargeTimes.Peek())
+        {
+            _rechargeTimes.Dequeue();
+            currentDashes = Mathf.Min(currentDashes + 1, maxDashes);
+            UpdateDashUI();
+        }
+
+        if (_input.dash && currentDashes > 0)
         {
             _input.dash = false;
             StartCoroutine(PerformDash());
         }
-    }
-
-    public void SetCanDash(bool canDash)
-    {
-        _canDash = canDash;
+        else if (_input.dash)
+        {
+            _input.dash = false;
+        }
     }
 
     private IEnumerator PerformDash()
-    {   
-        PlayerStats.Instance.AddDash();
-        _canDash = false;
-        dashActive.SetActive(false);
-        dashDisabled.SetActive(true);
+    {
+        currentDashes--;
+        _rechargeTimes.Enqueue(Time.time + dashCooldown);
+        UpdateDashUI();
 
+        // Vibration
         foreach(Gamepad gamepad in Gamepad.all)
         {
             try 
@@ -61,12 +73,10 @@ public class DashController : MonoBehaviour
                 gamepad.SetMotorSpeeds(0.2f, 0.2f);
                 StartCoroutine(StopVibration(gamepad));
             }
-            catch 
-            {
-            }
+            catch { }
         }
 
-        // Calculate direction from camera orientation
+        // Direction calculation
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
         Vector3 dashDirection = inputDirection.magnitude == 0 ? 
             _mainCamera.forward : 
@@ -75,12 +85,12 @@ public class DashController : MonoBehaviour
         dashDirection.y = 0;
         dashDirection.Normalize();
 
+        // Move
         float timer = 0f;
         Vector3 dashVelocity = dashDirection * (dashDistance / dashDuration);
 
         if(dashTrail != null) dashTrail.emitting = true;
 
-        // Dash movement
         while(timer < dashDuration)
         {
             _controller.Move(dashVelocity * Time.deltaTime);
@@ -89,36 +99,34 @@ public class DashController : MonoBehaviour
         }
 
         if(dashTrail != null) dashTrail.emitting = false;
-        yield return new WaitForSeconds(dashCooldown);
-        
-        _canDash = true;
-        dashDisabled.SetActive(false);
-        dashActive.SetActive(true);
-        _input.dash = false;
+    }
+
+    private void UpdateDashUI()
+    {
+        dash1Active.SetActive(currentDashes >= 1);
+        dash1Disabled.SetActive(currentDashes < 1);
+        dash2Active.SetActive(currentDashes >= 2);
+        dash2Disabled.SetActive(currentDashes < 2);
+    }
+
+    public void ResetDashes()
+    {
+        currentDashes = 0;
+        _rechargeTimes.Clear();
+        UpdateDashUI();
     }
 
     private IEnumerator StopVibration(Gamepad targetGamepad)
     {
         yield return new WaitForSecondsRealtime(0.2f);
-        
-        try
-        {
-            if(targetGamepad != null)
-                targetGamepad.ResetHaptics();
-        }
-        catch {}
+        try { targetGamepad?.ResetHaptics(); } catch { }
     }
 
     private void OnDisable()
     {
-        foreach(Gamepad gamepad in _activeGamepads)
+        foreach(Gamepad gamepad in Gamepad.all)
         {
-            try
-            {
-                gamepad?.ResetHaptics();
-            }
-            catch {}
+            try { gamepad?.ResetHaptics(); } catch { }
         }
-        _activeGamepads.Clear();
     }
 }
