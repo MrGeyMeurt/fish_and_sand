@@ -64,6 +64,7 @@ public class DashController : MonoBehaviour
         currentDashes--;
         _rechargeTimes.Enqueue(Time.time + dashCooldown);
         UpdateDashUI();
+        PlayerStats.Instance.AddDash();
 
         // Vibration
         foreach(Gamepad gamepad in Gamepad.all)

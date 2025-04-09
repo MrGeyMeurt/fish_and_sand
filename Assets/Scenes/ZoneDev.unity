@@ -9036,6 +9036,11 @@ PrefabInstance:
       propertyPath: Grounded
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2587482058987057557, guid: ab86180911bb38a4c9afbd1c692bc83b,
+        type: 3}
+      propertyPath: MoveSpeed
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 2587482058987057566, guid: ab86180911bb38a4c9afbd1c692bc83b,
         type: 3}
       propertyPath: m_Layer
@@ -9186,6 +9191,11 @@ PrefabInstance:
       propertyPath: dash2Disabled
       value: 
       objectReference: {fileID: 47975361}
+    - target: {fileID: 7610759436451602226, guid: ab86180911bb38a4c9afbd1c692bc83b,
+        type: 3}
+      propertyPath: speedReductionMultiplier
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 7801157110678741922, guid: ab86180911bb38a4c9afbd1c692bc83b,
         type: 3}
       propertyPath: m_DeselectOnBackgroundClick
@@ -9215,12 +9225,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Avatar
       value: 
-      objectReference: {fileID: 9000000, guid: 7bd6dd851f7174582a1345dceb50d078, type: 3}
+      objectReference: {fileID: 9000000, guid: 041ae89556d73b54aaa145a3849bad23, type: 3}
     - target: {fileID: 9098231400704979294, guid: ab86180911bb38a4c9afbd1c692bc83b,
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 67cdd658e9daee148889377fa73c8561, type: 2}
+      objectReference: {fileID: 9100000, guid: 809584c3be70af2408644016e2a9dd08, type: 2}
     m_RemovedComponents:
     - {fileID: 8051596979236867134, guid: ab86180911bb38a4c9afbd1c692bc83b, type: 3}
     m_RemovedGameObjects:

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -16,56 +17,71 @@ public class DeviceCheck : MonoBehaviour
     [SerializeField] private DeviceImageEntry[] deviceImages;
     
     private bool lastInputWasGamepad;
-    private bool hadAnyInput;
+    private float gamepadVerifyThreshold = 0.2f;
+    private float lastInputTime;
+    private float inputCooldown = 0.5f;
 
-    private void Update()
+    private void OnEnable()
     {
-        bool gamepadInput = Gamepad.current?.wasUpdatedThisFrame ?? false;
-        bool keyboardInput = CheckKeyboardMouseInput();
+        InputSystem.onActionChange += HandleActionChange;
+        UpdateCursorState();
+        UpdateDisplay();
+    }
 
-        if (gamepadInput)
+    private void OnDisable()
+    {
+        InputSystem.onActionChange -= HandleActionChange;
+    }
+
+    private void HandleActionChange(object obj, InputActionChange change)
+    {
+        if (change != InputActionChange.ActionPerformed) return;
+        if (Time.time - lastInputTime < inputCooldown) return;
+
+        var action = obj as InputAction;
+        if (action == null) return;
+
+        var control = action.activeControl;
+        if (control == null) return;
+
+        // Use generic input validation
+        if (control.device is Gamepad)
         {
-            lastInputWasGamepad = true;
-            hadAnyInput = true;
-        }
-        else if (keyboardInput)
-        {
-            lastInputWasGamepad = false;
-            hadAnyInput = true;
+            // Check if input is significant using deadzone
+            if (!control.IsActuated(gamepadVerifyThreshold))
+                return;
         }
 
+        lastInputWasGamepad = control.device is Gamepad;
+        lastInputTime = Time.time;
+        UpdateCursorState();
+        UpdateDisplay();
+    }
+
+    // Rest of the class remains the same
+    private void UpdateCursorState()
+    {
         bool isMainMenu = SceneManager.GetActiveScene().name == "MainMenu";
         bool isGamePaused = GameRule.Instance != null && GameRule.Instance.IsGamePaused();
 
-        if(!lastInputWasGamepad)
+        if (lastInputWasGamepad)
         {
-            if (isMainMenu || isGamePaused)
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            if (isMainMenu && !lastInputWasGamepad || isGamePaused)
             {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
+            else
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
         }
-        else
-        {
-            Cursor.visible = false;
-            Cursor.lockState = lastInputWasGamepad ? CursorLockMode.Locked : CursorLockMode.None;
-        }
-
-        if (hadAnyInput)
-        {
-            UpdateDisplay();
-        }
-    }
-
-    private bool CheckKeyboardMouseInput()
-    {
-        if (Keyboard.current.anyKey.wasPressedThisFrame)
-            return true;
-
-        if (Mouse.current.delta.ReadValue() != Vector2.zero)
-            return true;
-
-        return false;
     }
 
     private void UpdateDisplay()

@@ -68,9 +68,27 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    public void SaveStats()
+    {
+        PlayerPrefs.SetFloat("PlayTime", playTime);
+        PlayerPrefs.SetInt("Score", score);
+        PlayerPrefs.SetInt("HitsTaken", hitsTaken);
+        PlayerPrefs.SetInt("DashCount", dashCount);
+        PlayerPrefs.Save();
+    }
+
+    public void LoadStats()
+    {
+        playTime = PlayerPrefs.GetFloat("PlayTime", 0f);
+        score = PlayerPrefs.GetInt("Score", 0);
+        hitsTaken = PlayerPrefs.GetInt("HitsTaken", 0);
+        dashCount = PlayerPrefs.GetInt("DashCount", 0);
+    }
+
     public void GameOver()
     {
         isGameLoose = true;
+        SaveStats();
     }
 
     public void StopCountingTime() => isCountingTime = false;
