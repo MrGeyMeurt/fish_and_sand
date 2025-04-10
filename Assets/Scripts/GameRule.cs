@@ -266,14 +266,14 @@ public class GameRule : MonoBehaviour
         {
             state = State.GamePlaying;
             pauseMenu.SetActive(false);
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
             Time.timeScale = 1f;
         }
     }
 
     void SpawnFood()
     {
+        if(lvl >= 3) return;
+
         if(CountActiveFood() >= maxRenderedFood) return;
 
         // Filter all the inactive food items
@@ -285,6 +285,16 @@ public class GameRule : MonoBehaviour
             int randomIndex = UnityEngine.Random.Range(0, availableFood.Count);
             availableFood[randomIndex].SetActive(true);
         }
+    }
+
+        public int CountActiveFood()
+    {
+        int count = 0;
+        foreach(GameObject food in allFoodItems)
+        {
+            if(food.activeSelf) count++;
+        }
+        return count;
     }
 
     void MapLayout()
@@ -318,6 +328,11 @@ public class GameRule : MonoBehaviour
         if(lvl == 3)
         {
             Exit.gameObject.SetActive(true);
+
+            foreach(GameObject food in allFoodItems)
+            {
+                food.SetActive(false);
+            }
         }
     }
 
@@ -351,15 +366,5 @@ public class GameRule : MonoBehaviour
         {
             Exit.gameObject.SetActive(false);
         }
-    }
-
-    public int CountActiveFood()
-    {
-        int count = 0;
-        foreach(GameObject food in allFoodItems)
-        {
-            if(food.activeSelf) count++;
-        }
-        return count;
     }
 }
