@@ -9,7 +9,9 @@ In Fish&Sand, you control a fish navigating dangerous underwater territories dom
 ### Evolution System
 - **Pizza Collection:** Gather pizzas scattered throughout the underwater world to evolve your fish.
 - **Evolution Levels:** There are 3 evolution levels.
-- **Escape Zone:** Reach level 3 to unlock the escape zone (currently a work in progress).
+- **Escape Condition:**
+  - When you collect 2 pizzas (max evolution level), you unlock the escape route through the big container.
+  - Entering the container ends the game with a successful escape.
 
 ### Shark Mechanics
 - **Persistent Pursuit:** The shark continuously chases you.
@@ -66,4 +68,4 @@ Press the Play button in the Unity editor to start the game.
 
 ## Contributors
 - **[Manu.T](https://github.com/MrGeyMeurt)** - Developer | Responsible for physics, gameplay and functionalities.
-- **[Louis.B](https://github.com/louisbx)** - 3D Artist | Focused on 3D asset creation and animations.
+- **[Louis.B](https://louisbreux.fr)** - 3D Artist | Focused on 3D asset creation and animations.
