@@ -1,37 +1,68 @@
+![banner](https://github.com/user-attachments/assets/8c54bc63-e853-4489-b453-6547b6fc1d5f)
+
 # *Fish & Sand*
 
-## Description
-*Fish & Sand* is a minimalist underwater adventure game inspired by Untitled Goose Game. In this student project, the player controls a small fish. This project is developed in Unity with C#, utilizing Blender for 3D assets, following a low-poly style with flat colors for an immersive, simplified aesthetic.
+## Overview
+In Fish&Sand, you control a fish navigating dangerous underwater territories dominated by a relentless shark. Your objective is to evolve, collect pizzas, and use your dash ability to find a way out before the shark catches you.
 
-## Project status
-- **Game Mechanics**: Initial gameplay mechanics are under development, including movement, interactions, camera setup, and basic physics.
-- **Temporary Asset Creation**: Basic models are created in Blender (characters, environments) to test integration.
+## Game Mechanics
+### Evolution System
+- **Pizza Collection:** Gather pizzas scattered throughout the underwater world to evolve your fish.
+- **Evolution Levels:** There are 3 evolution levels.
+- **Escape Zone:** Reach level 3 to unlock the escape zone (currently a work in progress).
 
-## Features
-- **To-do List**: The player completes a single task at a time, such as moving an object from point A to point B.
-- **Camouflage**: The shark cannot detect the player if the player is near seaweed.
-- **Shark AI**:
-  - The shark moves randomly but will chase the player if they come close.
-  - After completing a task, the shark follows the player for 3 seconds before returning to random movement.
-- **Sound and Vibration Cues**:
-  - An alert sound plays when the shark is close to the player.
-  - The controller vibrates if the shark is close to the player.
-- **Environmental Interaction**: The fish can pick up and carry objects, adding an interactive element to tasks.
+### Shark Mechanics
+- **Persistent Pursuit:** The shark continuously chases you.
+- **Consequences of Being Caught:**
+  - Lose one evolution level when caught.
+  - If you're at level 1 and get caught, the game ends.
 
-## End-Game
-Once all tasks are completed, the fish reaches the coral reef, escapes the lagoon, and gains freedom in the open sea.
+### Dash Ability
+- **Activation:** Press Escape on the keyboard or X on a PlayStation controller to dash forward.
+- **Cooldown & Stacks:**
+  - 6-second cooldown
+  - Maximum of 2 dash stacks
+- **Usage:** Use the dash to quickly escape danger or traverse areas rapidly.
+- **Haptic Feedback:** Dashing triggers controller vibration for tactile feedback (controller only).
+ 
+## Controls
+- **Controller:** Fully supported (e.g., PlayStation controller)
+- **Keyboard & Mouse:** Fully supported, with an adaptive UI that updates in the menu and pause states.
+
+## Assets & Techniques
+### Included Assets
+- Corals
+- Containers
+- Pizza
+- Shark (Enemy)
+- Fish (Player)
+
+### Game Techniques
+- Randomized Layouts: Each game starts with assets arranged randomly for a unique layout every time.
+- Adaptive User Interface: The UI automatically adjusts based on the input device (keyboard/mouse or controller) during gameplay and in menus.
 
 ## Technologies Used
-- **Game Engine**: Unity
-- **Programming Language**: C#
-- **3D Design**: Blender
-- **Version Control**: GitHub
+- **Game Engine:** Unity (version 2022.3.47f1)
+- **Programming Language:** C#
+- **3D Design:** Blender
+- **Version Control:** GitHub
 
 ## Installation
-1. Clone or download the project repository.
-2. Open the project in Unity (version 2020.3 or newer).
-3. Ensure all required packages are installed in Unity.
-4. Press "Play" in the Unity editor to run the current version of the game.
+1. **Clone or Download the Repository:**  
+Clone or download the project repository from GitHub.
+
+2. **Open the Project in Unity:**  
+Use Unity (version 2022.3.47f1) to open the project.
+
+3. **Install Required Packages:**  
+Ensure all necessary Unity packages are installed.
+
+4. **Run the Game:**  
+Press the Play button in the Unity editor to start the game.
+
+## Future Improvements
+- **Audio & Visual Effects:** Add immersive audio and enhanced visual effects to deepen the underwater atmosphere.
+- **Stats Saving:** Implement a feature to save game statistics directly accessible from the main menu.
 
 ## Contributors
 - **[Manu.T](https://github.com/MrGeyMeurt)** - Developer | Responsible for physics, gameplay and functionalities.
