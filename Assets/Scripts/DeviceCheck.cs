@@ -56,6 +56,8 @@ public class DeviceCheck : MonoBehaviour
         lastInputTime = Time.time;
         UpdateCursorState();
         UpdateDisplay();
+
+        Debug.Log($"Input detected: {control.device.name} - {control.name}");
     }
 
     // Rest of the class remains the same
@@ -71,15 +73,15 @@ public class DeviceCheck : MonoBehaviour
         }
         else
         {
-            if (isMainMenu && !lastInputWasGamepad || isGamePaused)
+            if (isMainMenu && !lastInputWasGamepad)
             {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
-            else
+            if(isGamePaused)
             {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
             }
         }
     }

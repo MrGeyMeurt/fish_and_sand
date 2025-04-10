@@ -72,7 +72,8 @@ public class AITarget : MonoBehaviour
             m_Agent.isStopped = false;
             targetController.MoveSpeed = 0f;
             targetController.SprintSpeed = 0f;
-        } else if (GameRule.Instance.IsGamePlaying() && !isHitCooldown && !isEscapeCooldown)
+        }
+        else if (GameRule.Instance.IsGamePlaying() && !isHitCooldown && !isEscapeCooldown)
         {
             m_Agent.isStopped = false;
             targetController.MoveSpeed = targetMoveSpeed;
@@ -213,14 +214,14 @@ public class AITarget : MonoBehaviour
         return false;
     }
 
-    // private void OnDrawGizmos() // Debugging
-    // {
-    //     Gizmos.color = Color.red;
-    //     Gizmos.DrawWireSphere(transform.position, ColliderDistance);
-    //     Gizmos.DrawWireSphere(m_Escape.transform.position, 0.5f);
-    //     Gizmos.color = Color.green;
-    //     Gizmos.DrawLine(transform.position, Target.position);
-    //     Gizmos.color = Color.blue;
-    //     Gizmos.DrawLine(transform.position, m_Escape.transform.position);
-    // }
+    private void OnDrawGizmos() // Debugging
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, ColliderDistance);
+        Gizmos.DrawWireSphere(m_Escape.transform.position, 0.5f);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, Target.position);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, m_Escape.transform.position);
+    }
 }
