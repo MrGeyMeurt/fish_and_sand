@@ -353,6 +353,7 @@ public class GameRule : MonoBehaviour
     {
         lvl = Mathf.Clamp(lvl - 1, 0, levelObjects.Count);
         UpdatePlayerGeometry();
+        UpdateLevelText();
 
         if (lvl == 0)
         {
@@ -374,7 +375,7 @@ public class GameRule : MonoBehaviour
                 levelMessageText.text = "Eat pizza to evolve";
                 break;
             case 2:
-                levelMessageText.text = "Find another pizza to reach max evolution";
+                levelMessageText.text = "One pizza left to eat";
                 break;
             case 3:
                 levelMessageText.text = "Find the big container to get out";
