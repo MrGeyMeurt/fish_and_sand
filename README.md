@@ -1,6 +1,6 @@
-![banner](https://github.com/user-attachments/assets/8c54bc63-e853-4489-b453-6547b6fc1d5f)
+![banner_lowres](https://github.com/user-attachments/assets/51138b77-bf96-4816-a68c-006065a105ee)
 
-# *Fish & Sand*
+# *Fish&Sand*
 
 ## Overview
 In Fish&Sand, you control a fish navigating dangerous underwater territories dominated by a relentless shark. Your objective is to evolve, collect pizzas, and use your dash ability to find a way out before the shark catches you.
@@ -9,6 +9,8 @@ In Fish&Sand, you control a fish navigating dangerous underwater territories dom
 ### Evolution System
 - **Pizza Collection:** Gather pizzas scattered throughout the underwater world to evolve your fish.
 - **Evolution Levels:** There are 3 evolution levels.
+- **Shark Spawns:**
+  - Each time you reach a new evolution level for the first time, an additional shark spawns, increasing the danger.
 - **Escape Condition:**
   - When you collect 2 pizzas (max evolution level), you unlock the escape route through the big container.
   - Entering the container ends the game with a successful escape.
@@ -40,8 +42,8 @@ In Fish&Sand, you control a fish navigating dangerous underwater territories dom
 - Fish (Player)
 
 ### Game Techniques
-- Randomized Layouts: Each game starts with assets arranged randomly for a unique layout every time.
-- Adaptive User Interface: The UI automatically adjusts based on the input device (keyboard/mouse or controller) during gameplay and in menus.
+- **Randomized Layouts:** Each game starts with assets arranged randomly for a unique layout every time.
+- **Adaptive User Interface:** The UI automatically adjusts based on the input device (keyboard/mouse or controller) during gameplay and in menus.
 
 ## Technologies Used
 - **Game Engine:** Unity (version 2022.3.47f1)

@@ -21,6 +21,8 @@ public class GameRule : MonoBehaviour
     [Header("Game Rule Settings")]
     [SerializeField] private StarterAssetsInputs _input;
     [SerializeField] private Transform PlayerGeometry;
+    [SerializeField] private GameObject SecondEnemy;
+    [SerializeField] private GameObject ThirdEnemy;
     [SerializeField] private Transform FoodPool;
     [SerializeField] private Transform CameraPool;
     [SerializeField] private GameObject Exit;
@@ -37,8 +39,10 @@ public class GameRule : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject playingHUD;
+    [SerializeField] private GameObject goalHUD;
     [SerializeField] private GameObject gameOverHUD;
     [SerializeField] private GameObject countDownText;
+    [SerializeField] private TMP_Text levelMessageText;
 
     [Header("Mesh levels")]
     [SerializeField] private List<GameObject> levelObjects = new List<GameObject>();
@@ -128,6 +132,7 @@ public class GameRule : MonoBehaviour
         }
 
         InvokeRepeating("SpawnFood", 0f, 15f); // Call SpawnFood every 15 seconds (starting immediately)
+        UpdateLevelText();
         UpdatePlayerGeometry();
         MapLayout();
     }
@@ -248,6 +253,7 @@ public class GameRule : MonoBehaviour
     private IEnumerator GameOverSequence()
     {
         state = State.GameOver;
+        goalHUD.SetActive(false);
         PlayerStats.Instance.StopCountingTime();
         
         yield return new WaitForSeconds(gameOverDelay);
@@ -321,13 +327,20 @@ public class GameRule : MonoBehaviour
     public void AddLvl()
     {
         lvl = Mathf.Clamp(lvl + 1, 0, levelObjects.Count);
+        UpdateLevelText();
         UpdatePlayerGeometry();
 
         PlayerStats.Instance.AddScore(100);
+
+        if(lvl == 2)
+        {
+            SecondEnemy.SetActive(true);
+        }
     
         if(lvl == 3)
         {
             Exit.gameObject.SetActive(true);
+            ThirdEnemy.SetActive(true);
 
             foreach(GameObject food in allFoodItems)
             {
@@ -340,11 +353,36 @@ public class GameRule : MonoBehaviour
     {
         lvl = Mathf.Clamp(lvl - 1, 0, levelObjects.Count);
         UpdatePlayerGeometry();
+        UpdateLevelText();
 
         if (lvl == 0)
         {
             PlayerStats.Instance.isGameLoose = true;
             SetGameOver();
+        }
+    }
+
+    private void UpdateLevelText()
+    {
+        if (levelMessageText == null) return;
+
+        switch(lvl)
+        {
+            case 0:
+                levelMessageText.text = string.Empty;
+                break;
+            case 1:
+                levelMessageText.text = "Eat pizza to evolve";
+                break;
+            case 2:
+                levelMessageText.text = "One pizza left to eat";
+                break;
+            case 3:
+                levelMessageText.text = "Find the big container to get out";
+                break;
+            default:
+                levelMessageText.text = string.Empty;
+                break;
         }
     }
 

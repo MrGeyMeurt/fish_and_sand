@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 [System.Serializable]
 public struct DeviceImageEntry
@@ -24,6 +25,10 @@ public class DeviceCheck : MonoBehaviour
     private void OnEnable()
     {
         InputSystem.onActionChange += HandleActionChange;
+        if (GameRule.Instance != null)
+        {
+            GameRule.Instance.OnStateChanged += HandleGameStateChanged;
+        }
         UpdateCursorState();
         UpdateDisplay();
     }
@@ -31,6 +36,16 @@ public class DeviceCheck : MonoBehaviour
     private void OnDisable()
     {
         InputSystem.onActionChange -= HandleActionChange;
+        if (GameRule.Instance != null)
+        {
+            GameRule.Instance.OnStateChanged -= HandleGameStateChanged;
+        }
+    }
+
+    private void HandleGameStateChanged(object sender, EventArgs e)
+    {
+        UpdateCursorState();
+        UpdateDisplay();
     }
 
     private void HandleActionChange(object obj, InputActionChange change)
@@ -60,11 +75,24 @@ public class DeviceCheck : MonoBehaviour
         Debug.Log($"Input detected: {control.device.name} - {control.name}");
     }
 
-    // Rest of the class remains the same
     private void UpdateCursorState()
     {
         bool isMainMenu = SceneManager.GetActiveScene().name == "MainMenu";
         bool isGamePaused = GameRule.Instance != null && GameRule.Instance.IsGamePaused();
+
+        if (isMainMenu)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            return; 
+        }
+
+        if (isGamePaused)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            return;
+        }
 
         if (lastInputWasGamepad)
         {
@@ -73,16 +101,8 @@ public class DeviceCheck : MonoBehaviour
         }
         else
         {
-            if (isMainMenu && !lastInputWasGamepad)
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-            if(isGamePaused)
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 
