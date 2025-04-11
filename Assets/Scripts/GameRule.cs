@@ -21,6 +21,8 @@ public class GameRule : MonoBehaviour
     [Header("Game Rule Settings")]
     [SerializeField] private StarterAssetsInputs _input;
     [SerializeField] private Transform PlayerGeometry;
+    [SerializeField] private GameObject SecondEnemy;
+    [SerializeField] private GameObject ThirdEnemy;
     [SerializeField] private Transform FoodPool;
     [SerializeField] private Transform CameraPool;
     [SerializeField] private GameObject Exit;
@@ -324,10 +326,16 @@ public class GameRule : MonoBehaviour
         UpdatePlayerGeometry();
 
         PlayerStats.Instance.AddScore(100);
+
+        if(lvl == 2)
+        {
+            SecondEnemy.SetActive(true);
+        }
     
         if(lvl == 3)
         {
             Exit.gameObject.SetActive(true);
+            ThirdEnemy.SetActive(true);
 
             foreach(GameObject food in allFoodItems)
             {

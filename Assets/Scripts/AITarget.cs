@@ -13,6 +13,13 @@ public class AITarget : MonoBehaviour
     [SerializeField] private float m_spawnRadius = 10f;
     [SerializeField] private float offsetDistance = 4f;
 
+    [Header("Stuck Detection")]
+    [SerializeField] private float stuckTimeout = 2f;
+    [SerializeField] private float positionCheckInterval = 1f;
+    private float _lastMoveTime;
+    private Vector3 _lastPosition;
+    private float _currentStuckTime;
+
     [Header("Player Settings")]
     [SerializeField] private Transform Target;
     [SerializeField] private Camera mainCamera;
@@ -35,16 +42,20 @@ public class AITarget : MonoBehaviour
 
     private float targetMoveSpeed;
     private float targetSprintSpeed;
+    private PlayerCooldown _playerCooldown;
     
     void Start()
     {
         targetController = Target.GetComponent<ThirdPersonController>(); // Access the targetController component on the Target
         m_Agent = GetComponent<NavMeshAgent>(); // Access the NavMeshAgent component on the AI
+        _playerCooldown = Target.GetComponent<PlayerCooldown>();
 
         // Get the speed reference from the targetController
         targetMoveSpeed = targetController.MoveSpeed;
         targetSprintSpeed = targetController.SprintSpeed;
         m_Agent.speed = targetController.MoveSpeed * 1.2f; // Match the AI speed to the Target speed
+
+        StartCoroutine(CheckMovementProgress());
 
         Vector3 spawnPoint;
         if (RandomPoint(transform.position, m_spawnRadius, out spawnPoint)) // Spawn the AI at a random point within the spawn radius
@@ -61,41 +72,42 @@ public class AITarget : MonoBehaviour
     void Update()
     {
         if (GameRule.Instance == null) return;
+
+        // Mettre à jour l'état du jeu dans PlayerCooldown
+        bool isGamePlaying = GameRule.Instance.IsGamePlaying();
+        bool isGameOver = GameRule.Instance.IsGameOver();
+        _playerCooldown.SetGameActiveState(isGamePlaying && !isGameOver);
+
+        // Gestion de l'IA
+        m_Agent.isStopped = !isGamePlaying || isGameOver;
+
         if (!GameRule.Instance.IsGamePlaying() && !GameRule.Instance.IsGameOver())
         {
             m_Agent.isStopped = true;
-            targetController.MoveSpeed = 0f;
-            targetController.SprintSpeed = 0f;
         }
         else if (GameRule.Instance.IsGameOver())
         {
             m_Agent.isStopped = false;
-            targetController.MoveSpeed = 0f;
-            targetController.SprintSpeed = 0f;
         }
-        else if (GameRule.Instance.IsGamePlaying() && !isHitCooldown && !isEscapeCooldown)
+        else if (GameRule.Instance.IsGamePlaying())
         {
-            m_Agent.isStopped = false;
-            targetController.MoveSpeed = targetMoveSpeed;
-            targetController.SprintSpeed = targetSprintSpeed;
+            m_Agent.isStopped = false;            
         }
 
-        m_Distance = Vector3.Distance(m_Agent.transform.position, Target.position); // Calculate the distance to the target
-        
-        if (m_Distance < ColliderDistance)
+        m_Distance = Vector3.Distance(m_Agent.transform.position, Target.position);
+    
+        if (m_Distance < ColliderDistance && !isHitCooldown)
         {
-            if(!isHitCooldown)
-            {
-                StartCoroutine(HandleHitCooldown());
-            }
+            StartCoroutine(HandleHitCooldown());
         }
 
-        if (IsVisible() == true)
+        if (IsVisible())
         {
             TrackingBehavior();
         }
 
-        if (!m_Agent.hasPath && !isHitCooldown)
+        if ((!m_Agent.hasPath || (m_Agent.hasPath && Time.time - _lastMoveTime > stuckTimeout)) 
+            && !isHitCooldown)
         {
             PassiveBehavior();
         }
@@ -104,12 +116,11 @@ public class AITarget : MonoBehaviour
     private IEnumerator HandleHitCooldown()
     {
         isHitCooldown = true;
+    
         if(dashController != null)
-        dashController.ResetDashes();
+            dashController.ResetDashes();
 
-        // Disable movement and sprint
-        targetController.MoveSpeed = 0f;
-        targetController.SprintSpeed = 0f;
+        _playerCooldown.StartCooldown();
         FindObjectOfType<GameRule>().RemoveLvl();
 
         if(!isEscapeCooldown)
@@ -121,13 +132,8 @@ public class AITarget : MonoBehaviour
 
         yield return new WaitForSeconds(HitCooldownDuration);
 
-        if(dashController != null)
-
+        _playerCooldown.EndCooldown();
         isHitCooldown = false;
-
-        // Re-enable movement and sprint
-        targetController.MoveSpeed = targetMoveSpeed;
-        targetController.SprintSpeed = targetSprintSpeed;
     }
 
     private IEnumerator HandleEscapeCooldown()
@@ -157,6 +163,32 @@ public class AITarget : MonoBehaviour
         isEscaping = false;
     }
 
+    private IEnumerator CheckMovementProgress()
+{
+    while (true)
+    {
+        if (m_Agent.hasPath && m_Agent.remainingDistance > m_Agent.stoppingDistance)
+        {
+            // Check if position has changed significantly
+            if (Vector3.Distance(transform.position, _lastPosition) < 0.1f)
+            {
+                _currentStuckTime += positionCheckInterval;
+                if (_currentStuckTime >= stuckTimeout)
+                {
+                    FindNewDestination();
+                    _currentStuckTime = 0f;
+                }
+            }
+            else
+            {
+                _currentStuckTime = 0f;
+                _lastPosition = transform.position;
+            }
+        }
+        yield return new WaitForSeconds(positionCheckInterval);
+    }
+}
+
     private void TrackingBehavior()
     {
         if(!isEscaping && !isHitCooldown)
@@ -167,10 +199,22 @@ public class AITarget : MonoBehaviour
 
     private void PassiveBehavior()
     {
+        if (!m_Agent.pathPending && 
+        (m_Agent.remainingDistance <= m_Agent.stoppingDistance || 
+         _currentStuckTime >= stuckTimeout))
+        {
+            FindNewDestination();
+        }
+    }
+
+    private void FindNewDestination()
+    {
         Vector3 point;
         if (RandomPoint(transform.position, patrolRange, out point))
         {
             m_Agent.SetDestination(point);
+            _currentStuckTime = 0f;
+            _lastMoveTime = Time.time;
         }
     }
 
