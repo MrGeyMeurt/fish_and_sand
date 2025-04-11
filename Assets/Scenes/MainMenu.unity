@@ -940,9 +940,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deviceImages:
   - image: {fileID: 1615743390}
-    playstationSprite: {fileID: 21300000, guid: a3d86a58c85f64b46933ac2a0c353f4e,
+    playstationSprite: {fileID: 21300000, guid: 4bb28564d94b6be46829ede1952c5fd6,
       type: 3}
-    keyboardSprite: {fileID: 21300000, guid: 925a938a21677e34c866433427ad888f, type: 3}
+    keyboardSprite: {fileID: 21300000, guid: ca97b8239b4ce1d42a50a4b2f64f2974, type: 3}
   - image: {fileID: 535463211}
     playstationSprite: {fileID: 21300000, guid: 4dd465fed0631684e8c566bcf85bf184,
       type: 3}
@@ -3539,7 +3539,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a3d86a58c85f64b46933ac2a0c353f4e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ca97b8239b4ce1d42a50a4b2f64f2974, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
