@@ -42,6 +42,6 @@ public class PlayerCooldown : MonoBehaviour
         _controller.MoveSpeed = shouldStop ? 0f : _originalMoveSpeed;
         _controller.SprintSpeed = shouldStop ? 0f : _originalSprintSpeed;
         
-        Debug.Log($"Game Active: {_isGameActive} | Cooldowns: {_activeCooldownCount} | Speed: {_controller.MoveSpeed}");
+        // Debug.Log($"Game Active: {_isGameActive} | Cooldowns: {_activeCooldownCount} | Speed: {_controller.MoveSpeed}");
     }
 }
