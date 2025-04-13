@@ -72,7 +72,7 @@ public class DeviceCheck : MonoBehaviour
         UpdateCursorState();
         UpdateDisplay();
 
-        Debug.Log($"Input detected: {control.device.name} - {control.name}");
+        // Debug.Log($"Input detected: {control.device.name} - {control.name}");
     }
 
     private void UpdateCursorState()
