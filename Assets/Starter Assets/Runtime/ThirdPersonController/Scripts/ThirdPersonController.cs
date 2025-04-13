@@ -169,9 +169,9 @@ namespace StarterAssets
         private void AssignAnimationIDs()
         {
             _animIDSpeed = Animator.StringToHash("Speed");
-            _animIDGrounded = Animator.StringToHash("Grounded");
-            _animIDJump = Animator.StringToHash("Jump");
-            _animIDFreeFall = Animator.StringToHash("FreeFall");
+            // _animIDGrounded = Animator.StringToHash("Grounded");
+            // _animIDJump = Animator.StringToHash("Jump");
+            // _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
@@ -272,11 +272,11 @@ namespace StarterAssets
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
             // update animator if using character
-            // if (_hasAnimator)
-            // {
-            //     _animator.SetFloat(_animIDSpeed, _animationBlend);
-            //     _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-            // }
+            if (_hasAnimator)
+            {
+                _animator.SetFloat(_animIDSpeed, _animationBlend);
+                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+            }
         }
 
         private void JumpAndGravity()
