@@ -64,6 +64,9 @@ Ensure all necessary Unity packages are installed.
 4. **Run the Game:**  
 Press the Play button in the Unity editor to start the game.
 
+## Download and Play
+You can download and play the game directly from [GameJolt](https://gamejolt.com/games/fish_and_sand/985922).
+
 ## Future Improvements
 - **Audio & Visual Effects:** Add immersive audio and enhanced visual effects to deepen the underwater atmosphere.
 - **Stats Saving:** Implement a feature to save game statistics directly accessible from the main menu.
