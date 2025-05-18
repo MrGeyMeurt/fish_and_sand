@@ -7,6 +7,8 @@ using System.Linq;
 [RequireComponent(typeof(NavMeshAgent))]
 public class AITarget : MonoBehaviour
 {
+    [Header("Animation")]
+    private Animator _targetAnimator;
     [Header("AI Settings")]
     [SerializeField] private NavMeshAgent m_Agent;
     [SerializeField] private GameObject m_Escape;
@@ -49,6 +51,8 @@ public class AITarget : MonoBehaviour
         targetController = Target.GetComponent<ThirdPersonController>(); // Access the targetController component on the Target
         m_Agent = GetComponent<NavMeshAgent>(); // Access the NavMeshAgent component on the AI
         _playerCooldown = Target.GetComponent<PlayerCooldown>();
+
+        _targetAnimator = Target.GetComponent<Animator>();
 
         // Get the speed reference from the targetController
         targetMoveSpeed = targetController.MoveSpeed;
@@ -111,11 +115,21 @@ public class AITarget : MonoBehaviour
         {
             PassiveBehavior();
         }
+
+        if (GameRule.Instance.IsGameOver())
+        {
+            Target.GetComponent<ThirdPersonController>().TriggerDeath();
+        }
     }
 
     private IEnumerator HandleHitCooldown()
     {
         isHitCooldown = true;
+
+        if(Target.TryGetComponent(out ThirdPersonController playerController))
+        {
+            playerController.TriggerHit();
+        }
     
         if(dashController != null)
             dashController.ResetDashes();
@@ -164,30 +178,30 @@ public class AITarget : MonoBehaviour
     }
 
     private IEnumerator CheckMovementProgress()
-{
-    while (true)
     {
-        if (m_Agent.hasPath && m_Agent.remainingDistance > m_Agent.stoppingDistance)
+        while (true)
         {
-            // Check if position has changed significantly
-            if (Vector3.Distance(transform.position, _lastPosition) < 0.1f)
+            if (m_Agent.hasPath && m_Agent.remainingDistance > m_Agent.stoppingDistance)
             {
-                _currentStuckTime += positionCheckInterval;
-                if (_currentStuckTime >= stuckTimeout)
+                // Check if position has changed significantly
+                if (Vector3.Distance(transform.position, _lastPosition) < 0.1f)
                 {
-                    FindNewDestination();
+                    _currentStuckTime += positionCheckInterval;
+                    if (_currentStuckTime >= stuckTimeout)
+                    {
+                        FindNewDestination();
+                        _currentStuckTime = 0f;
+                    }
+                }
+                else
+                {
                     _currentStuckTime = 0f;
+                    _lastPosition = transform.position;
                 }
             }
-            else
-            {
-                _currentStuckTime = 0f;
-                _lastPosition = transform.position;
-            }
+            yield return new WaitForSeconds(positionCheckInterval);
         }
-        yield return new WaitForSeconds(positionCheckInterval);
     }
-}
 
     private void TrackingBehavior()
     {

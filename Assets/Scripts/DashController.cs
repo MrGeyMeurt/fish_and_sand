@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 public class DashController : MonoBehaviour
 {
+    [Header("Animation")]
+    [SerializeField] private Animator _animator;
+    private int _animIDDash;
+
     [Header("Dash Settings")]
     [SerializeField] private float dashDistance = 10f;
     [SerializeField] private float dashDuration = 0.2f;
@@ -34,6 +38,9 @@ public class DashController : MonoBehaviour
         currentDashes = maxDashes;
         UpdateDashUI();
         if (dashTrail != null) dashTrail.emitting = false;
+
+        _animator = GetComponent<Animator>();
+        _animIDDash = Animator.StringToHash("Dash");
     }
 
     private void Update()
@@ -61,6 +68,8 @@ public class DashController : MonoBehaviour
 
     private IEnumerator PerformDash()
     {
+        _animator.SetTrigger(_animIDDash);
+
         currentDashes--;
         _rechargeTimes.Enqueue(Time.time + dashCooldown);
         UpdateDashUI();
@@ -100,6 +109,8 @@ public class DashController : MonoBehaviour
         }
 
         if(dashTrail != null) dashTrail.emitting = false;
+
+        _animator.ResetTrigger(_animIDDash);
     }
 
     private void UpdateDashUI()

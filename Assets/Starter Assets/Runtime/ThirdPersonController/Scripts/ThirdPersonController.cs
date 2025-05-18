@@ -97,6 +97,10 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDHit;
+        private int _animIDDeath;
+        private int _animIDIsAlive;
+        public bool IsAlive { get; private set; } = true;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -173,6 +177,9 @@ namespace StarterAssets
             // _animIDJump = Animator.StringToHash("Jump");
             // _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDHit = Animator.StringToHash("Hit");
+            _animIDDeath = Animator.StringToHash("Death");
+            _animIDIsAlive = Animator.StringToHash("IsAlive");
         }
 
         private void GroundedCheck()
@@ -345,6 +352,25 @@ namespace StarterAssets
             if (_verticalVelocity < _terminalVelocity)
             {
                 _verticalVelocity += Gravity * Time.deltaTime;
+            }
+        }
+
+        public void TriggerHit()
+        {
+            if (_hasAnimator && IsAlive)
+            {
+                _animator.SetTrigger(_animIDHit);
+            }
+        }
+
+        public void TriggerDeath()
+        {
+            if (_hasAnimator && IsAlive)
+            {
+                IsAlive = false;
+                _animator.SetBool(_animIDIsAlive, false);
+                _animator.SetTrigger(_animIDDeath);
+                _controller.enabled = false;
             }
         }
 

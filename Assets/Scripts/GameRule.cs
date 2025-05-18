@@ -67,6 +67,7 @@ public class GameRule : MonoBehaviour
     }
     private State state;
     private CharacterController _controller;
+    private ThirdPersonController _playerController;
 
     private void Awake()
     {
@@ -85,6 +86,7 @@ public class GameRule : MonoBehaviour
         if(player != null)
         {
             _input = player.GetComponent<StarterAssetsInputs>();
+            _playerController = player.GetComponent<ThirdPersonController>();
         }
         else
         {
@@ -168,8 +170,7 @@ public class GameRule : MonoBehaviour
                 }
                 if(GamePlayingTimer <= 0f)
                 {
-                    state = State.GameOver;
-                    OnStateChanged?.Invoke(this, EventArgs.Empty);
+                    SetGameOver();
                 }
                 break;
             case State.GameOver:
@@ -255,6 +256,11 @@ public class GameRule : MonoBehaviour
         state = State.GameOver;
         goalHUD.SetActive(false);
         PlayerStats.Instance.StopCountingTime();
+
+        if(_playerController != null)
+        {
+            _playerController.TriggerDeath();
+        }
         
         yield return new WaitForSeconds(gameOverDelay);
         gameOverUI.ShowGameOver();
@@ -388,19 +394,25 @@ public class GameRule : MonoBehaviour
 
     void UpdatePlayerGeometry()
     {
-        // Desactivate every level mesh
-        foreach(GameObject level in levelObjects)
+        // Deactivate every level mesh except level 0
+        foreach (GameObject level in levelObjects)
         {
             level.SetActive(false);
         }
 
         // Activate the current level mesh
-        if(lvl > 0 && lvl <= levelObjects.Count)
+        if (lvl > 0 && lvl <= levelObjects.Count)
         {
             levelObjects[lvl - 1].SetActive(true);
         }
 
-        if(lvl != 3)
+        // Ensure level 0 is always active
+        if (lvl == 0)
+        {
+            levelObjects[0].SetActive(true);
+        }
+
+        if (lvl != 3)
         {
             Exit.gameObject.SetActive(false);
         }
